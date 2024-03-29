@@ -299,12 +299,12 @@ export default function Login() {
         maxWidth="xs"
       >
         <div className={styles.header}>
-          <span>Mybrary</span>
+          <span className={styles.title}>Mybrary</span>
         </div>
         <Box
           component="form"
           onSubmit={loginHandler}
-          sx={{ mt: 1, display: "flex", flexDirection: "column", width: 350 }}
+          sx={{ my: 10, display: "flex", flexDirection: "column", width: 350 }}
         >
           <TextField
             error={emailWarning !== ""}
