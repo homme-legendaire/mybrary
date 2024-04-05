@@ -14,6 +14,7 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
+  SvgIcon,
   TextField,
   Typography,
 } from "@mui/material";
@@ -295,16 +296,49 @@ export default function Login() {
           alignItems: "center",
           justifyContent: "center",
           height: "100vh",
+          backgroundColor: "var(--bg)",
         }}
         maxWidth="xs"
       >
         <div className={styles.header}>
+          <SvgIcon
+            fontSize="large"
+            sx={{
+              width: "56px",
+              height: "56px",
+            }}
+          >
+            <svg
+              width="416"
+              height="392"
+              viewBox="0 0 416 392"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M111.445 332.608H216.643"
+                stroke="#7c3f34"
+                stroke-width="16"
+              />
+              <path
+                d="M112.322 20.5198H216.643V38.0529M112.322 20.5198H8V74.8722M112.322 20.5198V74.8722M112.322 74.8722H8M112.322 74.8722H216.643M112.322 74.8722V323.841M8 74.8722V323.841M216.643 74.8722V323.841M216.643 74.8722V38.0529M112.322 323.841V381.7M112.322 323.841H8M112.322 381.7H8V323.841M112.322 381.7H216.643V323.841M216.643 323.841V38.0529M216.643 38.0529L314.828 10L329.411 64.3524M216.643 38.0529L232.423 92.4053M232.423 92.4053L298.347 323.841M232.423 92.4053L329.411 64.3524M391.974 297.542L298.347 323.841M391.974 297.542L406 351.894L314.828 381.7L298.347 323.841M391.974 297.542L329.411 64.3524"
+                stroke="#7c3f34"
+                stroke-width="16"
+              />
+            </svg>
+          </SvgIcon>
           <span className={styles.title}>Mybrary</span>
         </div>
         <Box
           component="form"
           onSubmit={loginHandler}
-          sx={{ my: 10, display: "flex", flexDirection: "column", width: 350 }}
+          sx={{
+            my: 3,
+            display: "flex",
+            flexDirection: "column",
+            width: "100vw",
+            padding: "0 16px",
+          }}
         >
           <TextField
             error={emailWarning !== ""}
@@ -320,7 +354,7 @@ export default function Login() {
             onBlur={inputBlurHandler}
             helperText={emailWarning}
           />
-          {countDown > 0 && emailDisabled ? (
+          {countDown > 0 && emailDisabled && (
             <Typography
               sx={{
                 fontSize: "0.75rem",
@@ -329,7 +363,7 @@ export default function Login() {
             >
               로그인 시도 횟수를 초과하였어요. 😭 {countDown}초 후에 재시도 가능
             </Typography>
-          ) : null}
+          )}
           <FormControl
             variant="outlined"
             sx={{ mt: 1 }}
@@ -375,7 +409,6 @@ export default function Login() {
             <FormControlLabel
               control={
                 <Checkbox
-                  disableRipple
                   checked={saveId}
                   onClick={(e) => {
                     setSaveId(e.target.checked);
@@ -386,7 +419,6 @@ export default function Login() {
               label="아이디 기억하기"
             />
             <Button
-              disableRipple
               sx={{
                 color: "primary.main",
                 backgroundColor: "inherit",
@@ -396,7 +428,7 @@ export default function Login() {
                 },
               }}
             >
-              <Link href="/findPassword">비밀번호 찾기</Link>
+              <Link href="/findpassword">비밀번호 찾기</Link>
             </Button>
           </Grid>
           {loginLoading ? (
@@ -415,22 +447,25 @@ export default function Login() {
               로그인
             </LoadingButton>
           ) : (
-            <Button
-              type="submit"
-              disableRipple
-              fullWidth
-              sx={{
-                fontSize: "1.25rem",
-                color: "#ffffff",
-                backgroundColor: "primary.main",
-                "&:hover": {
-                  backgroundColor: "primary.dark",
-                },
-              }}
-              disabled={emailDisabled}
-            >
-              로그인
-            </Button>
+            <>
+              <Link href="/main">
+                <Button
+                  type="submit"
+                  fullWidth
+                  sx={{
+                    fontSize: "1.25rem",
+                    color: "#ffffff",
+                    backgroundColor: "primary.main",
+                    "&:hover": {
+                      backgroundColor: "primary.dark",
+                    },
+                  }}
+                  disabled={emailDisabled}
+                >
+                  로그인
+                </Button>
+              </Link>
+            </>
           )}
           <Grid
             mt={2}
@@ -440,7 +475,6 @@ export default function Login() {
             }}
           >
             <Button
-              disableRipple
               my={15}
               sx={{
                 color: "primary.main",
@@ -452,7 +486,7 @@ export default function Login() {
                 },
               }}
               onClick={() =>
-                router.push(`/signUp${redirect ? `?redirect=${redirect}` : ""}`)
+                router.push(`/signup${redirect ? `?redirect=${redirect}` : ""}`)
               }
             >
               회원가입

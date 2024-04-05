@@ -10,8 +10,9 @@
   justify-content: center;
   align-items: center;
 
-  gap: 1rem;
-  padding: 1rem 0;
+  gap: 0.5rem;
+  padding: 76px 8px 68px 8px;
+
   margin: 2rem 0;
   width: 100%;
   color: #212545;

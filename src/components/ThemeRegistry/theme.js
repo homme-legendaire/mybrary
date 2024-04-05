@@ -28,6 +28,15 @@ const theme = createTheme({
     },
     secondary: {
       main: "#d39f94",
+      dark: "#c37b6a",
+      bright: "rgba(211, 159, 148, 0.7)",
+      light: "rgba(211, 159, 148, 0.04)",
+    },
+    mybraryPink: {
+      main: "#CF9084",
+      dark: "#bb6856",
+      bright: "rgba(207, 144, 132, 0.7)",
+      light: "rgba(207, 144, 132, 0.04)",
     },
     gray: {
       main: "#979797",
