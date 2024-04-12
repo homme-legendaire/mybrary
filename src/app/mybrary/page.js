@@ -12,41 +12,46 @@ import styles from "./page.module.css";
 import Navigation from "@/components/Navigation";
 import { useState } from "react";
 import { Add, Search } from "@mui/icons-material";
+import { useRecoilState } from "recoil";
+import { savedBookListState } from "@/components/recoil/atom";
 
 export default function Mybrary() {
   const [sortedBy, setSortedBy] = useState("최신순");
   const sortingList = ["최신순", "제목순", "저자순"];
   const [addBookModalOpen, setAddBookModalOpen] = useState(false);
 
-  // 책 추가 모달 파트
+  // 저장된 책 리스트
+  const [savedBookList, setSavedBookList] = useRecoilState(savedBookListState);
+
+  // 책 추가 모달 파트 변수
   const [title, setTitle] = useState("");
-  const [genre, setGenre] = useState("소설");
-  const genreList = [
-    "소설",
-    "시/에세이",
-    "인문",
-    "가정/육아",
-    "요리",
-    "건강",
-    "취미/실용/스포츠",
-    "경제/경영",
-    "자기계발",
-    "정치/사회",
-    "역사/문화",
-    "종교",
-    "예술/대중문화",
-    "기술/공학",
-    "외국어",
-    "과학",
-    "취업/수험서",
-    "여행",
-    "컴퓨터/IT",
-    "잡지",
-    "청소년",
-    "유아(0~7세)",
-    "어린이(초등)",
-    "만화",
-  ];
+  // const [genre, setGenre] = useState("소설");
+  // const genreList = [
+  //   "소설",
+  //   "시/에세이",
+  //   "인문",
+  //   "가정/육아",
+  //   "요리",
+  //   "건강",
+  //   "취미/실용/스포츠",
+  //   "경제/경영",
+  //   "자기계발",
+  //   "정치/사회",
+  //   "역사/문화",
+  //   "종교",
+  //   "예술/대중문화",
+  //   "기술/공학",
+  //   "외국어",
+  //   "과학",
+  //   "취업/수험서",
+  //   "여행",
+  //   "컴퓨터/IT",
+  //   "잡지",
+  //   "청소년",
+  //   "유아(0~7세)",
+  //   "어린이(초등)",
+  //   "만화",
+  // ];
   const [searchResult, setSearchResult] = useState([]);
   const [selectedBook, setSelectedBook] = useState({});
 
@@ -111,6 +116,15 @@ export default function Mybrary() {
     }
   };
 
+  console.log("SAVED", savedBookList);
+
+  const selectedBookSaveHandler = async () => {
+    if (!savedBookList?.some((item) => item.isbn === selectedBook.isbn)) {
+      setSavedBookList([...savedBookList, selectedBook]);
+    }
+    setAddBookModalOpen(false);
+  };
+
   return (
     <div className={styles.container}>
       <Modal
@@ -140,7 +154,7 @@ export default function Mybrary() {
                 }}
               />
             </div>
-            <div className={styles.inputRow}>
+            {/* <div className={styles.inputRow}>
               <div className={styles.inputLable}>장르</div>
               <Select
                 value={genre}
@@ -160,7 +174,7 @@ export default function Mybrary() {
                   );
                 })}
               </Select>
-            </div>
+            </div> */}
             {Object.keys(selectedBook).length === 0 ? (
               <div className={styles.searchResultContainer}>
                 <div className={styles.searchResult}>
@@ -235,17 +249,19 @@ export default function Mybrary() {
                   backgroundColor: "primary.dark",
                 },
               }}
+              onClick={selectedBookSaveHandler}
             >
               저장
             </Button>
           </div>
         </div>
       </Modal>
-      <div>
+      <div className={styles.main}>
         <Select
           value={sortedBy}
           onChange={(e) => setSortedBy(e.target.value)}
           sx={{
+            width: "120px",
             " & .MuiSelect-select": {
               padding: "8px 12px",
             },
@@ -259,6 +275,19 @@ export default function Mybrary() {
             );
           })}
         </Select>
+        <div className={styles.savedBookList}>
+          {savedBookList.map((item, idx) => (
+            <div key={idx} className={styles.savedBookItem}>
+              <img src={item.image} alt={item.title} width={60} height={78} />
+              <div className={styles.savedBookItemContent}>
+                <span className={styles.savedBookItemTitle}>{item.title}</span>
+                <span>{item.author}</span>
+                <span>{item.publisher}</span>
+                <span>{item.pubdate}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       <Button
         variant="contained"

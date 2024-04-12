@@ -98,4 +98,29 @@
 
 .selectedBook {
   display: flex;
+  gap: 12px;
+}
+
+.selectedBookContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.selectedBookTitle {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.savedBookList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }

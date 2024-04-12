@@ -50,7 +50,7 @@ export default function Navigation({ value }) {
           }}
         />
         <BottomNavigationAction
-          label="찾기"
+          label="새 책 찾기"
           icon={<ScreenSearchDesktop fontSize="large" />}
           onClick={() => router.push("/find")}
           sx={{
