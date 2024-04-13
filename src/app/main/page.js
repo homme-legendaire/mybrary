@@ -6,11 +6,12 @@ import { useState } from "react";
 
 export default function Main() {
   const [prompt, setPrompt] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
 
   const clickHandler = async () => {
     try {
       const res = await fetch(
-        `${process.env.PRODUCTION_SERVER_HOST}/prompt/test`,
+        `${process.env.PRODUCTION_SERVER_HOST}/diffusion`,
         {
           method: "POST",
           headers: {
@@ -21,10 +22,15 @@ export default function Main() {
           }),
         }
       );
-      const resJson = await res.json();
-      if (resJson.result === "success") {
-        alert("등록 완료.");
+
+      if (!res.ok) {
+        alert("서버에서 오류가 발생했습니다.");
+        return;
       }
+
+      const imageBlob = await res.blob();
+      const imageObjectUrl = URL.createObjectURL(imageBlob);
+      setImageUrl(imageObjectUrl);
     } catch (err) {
       alert(`에러가 발생했습니다. ${err}`);
     }
@@ -43,6 +49,7 @@ export default function Main() {
         }}
       />
       <Button onClick={clickHandler}>Click me</Button>
+      {imageUrl && <img src={imageUrl} alt="diffusionResult" />}
       <Navigation value={0} />
     </div>
   );
