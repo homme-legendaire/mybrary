@@ -14,6 +14,7 @@ import { useState } from "react";
 import { Add, Search } from "@mui/icons-material";
 import { useRecoilState } from "recoil";
 import { savedBookListState } from "@/components/recoil/atom";
+import SelectedBookControlModal from "@/components/modal/SelectedBookControlModal";
 
 export default function Mybrary() {
   const [sortedBy, setSortedBy] = useState("최신순");
@@ -54,6 +55,10 @@ export default function Mybrary() {
   // ];
   const [searchResult, setSearchResult] = useState([]);
   const [selectedBook, setSelectedBook] = useState({});
+
+  // 책 수정, 사진 촬영 모달 파트 변수
+  const [selectedBookModalOpen, setSelectedBookModalOpen] = useState(false);
+  const [selectedBookForEdit, setSelectedBookForEdit] = useState({});
 
   const bookTitleSearchHandler = () => {
     setSelectedBook({});
@@ -119,10 +124,18 @@ export default function Mybrary() {
   console.log("SAVED", savedBookList);
 
   const selectedBookSaveHandler = async () => {
+    if (Object.keys(selectedBook).length === 0) {
+      return;
+    }
     if (!savedBookList?.some((item) => item.isbn === selectedBook.isbn)) {
       setSavedBookList([...savedBookList, selectedBook]);
     }
     setAddBookModalOpen(false);
+  };
+
+  const bookSelectHandler = (key) => {
+    setSelectedBookForEdit(savedBookList[key]);
+    setSelectedBookModalOpen(true);
   };
 
   return (
@@ -237,25 +250,31 @@ export default function Mybrary() {
                 </div>
               </div>
             )}
-
-            <Button
-              fullWidth
-              sx={{
-                fontSize: "1.1rem",
-                color: "#ffffff",
-                backgroundColor: "primary.main",
-                marginTop: "auto",
-                "&:hover": {
-                  backgroundColor: "primary.dark",
-                },
-              }}
-              onClick={selectedBookSaveHandler}
-            >
-              저장
-            </Button>
+            {Object.keys(selectedBook).length > 0 && (
+              <Button
+                fullWidth
+                sx={{
+                  fontSize: "1.1rem",
+                  color: "#ffffff",
+                  backgroundColor: "primary.main",
+                  marginTop: "auto",
+                  "&:hover": {
+                    backgroundColor: "primary.dark",
+                  },
+                }}
+                onClick={selectedBookSaveHandler}
+              >
+                저장
+              </Button>
+            )}
           </div>
         </div>
       </Modal>
+      <SelectedBookControlModal
+        open={selectedBookModalOpen}
+        onClose={() => setSelectedBookModalOpen(false)}
+        book={selectedBookForEdit}
+      />
       <div className={styles.main}>
         <Select
           value={sortedBy}
@@ -277,13 +296,29 @@ export default function Mybrary() {
         </Select>
         <div className={styles.savedBookList}>
           {savedBookList.map((item, idx) => (
-            <div key={idx} className={styles.savedBookItem}>
-              <img src={item.image} alt={item.title} width={60} height={78} />
+            <div
+              key={idx}
+              className={styles.savedBookItem}
+              onClick={() => bookSelectHandler(idx)}
+            >
+              <img
+                className={styles.savedBookItemImg}
+                src={item.image}
+                alt={item.title}
+                width={60}
+                height={78}
+              />
               <div className={styles.savedBookItemContent}>
-                <span className={styles.savedBookItemTitle}>{item.title}</span>
-                <span>{item.author}</span>
-                <span>{item.publisher}</span>
-                <span>{item.pubdate}</span>
+                <span className={styles.savedBookItemTitle}>
+                  {item.title?.length > 8
+                    ? item.title.slice(0, 8) + ".."
+                    : item.title}
+                </span>
+                <span>
+                  {item.author?.length > 8
+                    ? item.author.slice(0, 8) + ".."
+                    : item.author}
+                </span>
               </div>
             </div>
           ))}

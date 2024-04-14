@@ -1,0 +1,91 @@
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300;
+  height: 400;
+  overflow: auto;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  perspective: 1000px;
+}
+
+.flipContainer {
+  position: relative;
+  width: 268px; /* Width of the flip card */
+  height: 368px; /* Height of the flip card */
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.flipContainerIsFlipped {
+  position: relative;
+  width: 268px; /* Width of the flip card */
+  height: 368px; /* Height of the flip card */
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  transform: rotateY(180deg);
+}
+
+.frontSide,
+.backSide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* For Safari */
+  backface-visibility: hidden;
+}
+
+/* Initially, the back side is hidden */
+.backSide {
+  transform: rotateY(180deg);
+}
+
+.overlayText {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  color: white; /* 텍스트 색상 */
+  background-color: rgba(0, 0, 0, 0.55); /* 반투명 배경 */
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 16px;
+  height: calc(100vh);
+}
+
+.bookMarkText {
+  font-size: 2rem;
+}
+
+.bookMarkMemoInput {
+  width: 100%;
+  height: 100px;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+}
+
+.bookMarkMemoInput:focus {
+  outline: none;
+}
