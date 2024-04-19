@@ -1,23 +1,24 @@
 import { Modal, IconButton } from "@mui/material";
 import styles from "./SelectedBookControlModal.module.css";
-import { AddAPhoto, IosShare } from "@mui/icons-material";
+import { AddAPhoto, BookmarkAdd, IosShare } from "@mui/icons-material";
 import { useState } from "react";
 import BookMarkModal from "./BookMarkModal";
+import BookMarkAddModal from "./BookMarkAddModal";
+import { useRecoilState } from "recoil";
+import { bookMarkListState } from "../recoil/atom";
 
 export default function SelectedBookControlModal({ open, onClose, book }) {
-  const [bookMarkList, setBookMarkList] = useState([
-    {
-      text: "너의 장미를 그토록 중요하게 만든 건 너의 장미를 위해 네가 소비한 그 시간이란다",
-      img: "/rose.png",
-      memo: "시간을 들여야 하는 것이 중요하다는 것을 알게 되었다",
-    },
-  ]);
+  const [bookMarkList, setBookMarkList] = useRecoilState(bookMarkListState);
 
   console.log("BOOKMARKLIST", bookMarkList);
 
   // 책갈피 모달 변수
   const [bookMarkModalOpen, setBookMarkModalOpen] = useState(false);
   const [selectedBookMark, setSelectedBookMark] = useState({});
+
+  // 책갈피 추가 모달 변수
+  const [bookMarkAddModalOpen, setBookMarkAddModalOpen] = useState(false);
+  const [bookMarkAddModalText, setBookMarkAddModalText] = useState("");
 
   const bookMarkModalOpenHandler = (key) => {
     setSelectedBookMark(bookMarkList[key]);
@@ -30,6 +31,10 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
         open={bookMarkModalOpen}
         onClose={() => setBookMarkModalOpen(false)}
         bookMark={selectedBookMark}
+      />
+      <BookMarkAddModal
+        open={bookMarkAddModalOpen}
+        onClose={() => setBookMarkAddModalOpen(false)}
       />
       <Modal open={open} onClose={onClose} disableAutoFocus>
         <div className={styles.modal}>
@@ -50,7 +55,11 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
               </div>
             </div>
             <div className={styles.bookActionBtn}>
-              <IconButton>
+              <IconButton
+                onClick={() => {
+                  setBookMarkAddModalOpen(true);
+                }}
+              >
                 <AddAPhoto />
               </IconButton>
               <IconButton>

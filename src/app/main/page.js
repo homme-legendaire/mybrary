@@ -40,23 +40,7 @@ export default function Main() {
 
   return (
     <div className={styles.container}>
-      <h3
-        style={{
-          textAlign: "center",
-        }}
-      >
-        감명깊은 글귀를 추가하여 책갈피를 생성해보세요.
-      </h3>
-      <input
-        type="text"
-        value={prompt}
-        onChange={(e) => {
-          setPrompt(e.target.value);
-        }}
-      />
-      <Button onClick={clickHandler}>책갈피 생성하기</Button>
-      {/* {imageUrl && <img src={imageUrl} alt="diffusionResult" />} */}
-      <img src={imageUrl} alt="diffusionResult" />
+      <h1>Main Page</h1>
       <Navigation value={0} />
     </div>
   );

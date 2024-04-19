@@ -22,3 +22,14 @@ export const savedBookListState = atom({
   ],
   // effects_UNSTABLE: [persistAtom],
 });
+
+export const bookMarkListState = atom({
+  key: "bookMarkListState",
+  default: [
+    {
+      text: "너의 장미를 그토록 중요하게 만든 건 너의 장미를 위해 네가 소비한 그 시간이란다",
+      img: "/rose.png",
+      memo: "시간을 들여야 하는 것이 중요하다는 것을 알게 되었다",
+    },
+  ],
+});

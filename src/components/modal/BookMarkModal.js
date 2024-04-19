@@ -1,6 +1,5 @@
 import { Modal, IconButton } from "@mui/material";
 import styles from "./BookMarkModal.module.css";
-import { AddAPhoto, IosShare } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 
 export default function BookMarkModal({ open, onClose, bookMark }) {

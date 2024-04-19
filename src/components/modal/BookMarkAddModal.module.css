@@ -1,0 +1,25 @@
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 475px;
+  overflow: auto;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  perspective: 1000px;
+}
+
+.title {
+  text-align: center;
+}
+
+.image {
+  align-self: center;
+}
