@@ -5,3 +5,52 @@
   width: 100vw;
   padding: 76px 8px 68px 8px;
 }
+
+.body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.recommendationContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.title {
+  font-size: 24px;
+}
+
+.bookCover {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(146, 142, 148, 0.2);
+  padding: 8px;
+  width: 100vw;
+  margin: 0 -8px;
+}
+
+.bookCoverImg {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.bookCoverSelected {
+  transform: scale(1.05);
+}
+
+.bookCoverImg:hover {
+  transform: scale(1.05);
+}
+
+.book {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}

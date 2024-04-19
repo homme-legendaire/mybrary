@@ -7,56 +7,13 @@ import BookMarkModal from "./BookMarkModal";
 export default function SelectedBookControlModal({ open, onClose, book }) {
   const [bookMarkList, setBookMarkList] = useState([
     {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
-    },
-    {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
-    },
-    {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
-    },
-    {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
-    },
-    {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
-    },
-    {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
-    },
-    {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
-    },
-    {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
-    },
-    {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
-    },
-    {
-      text: "책갈피 1",
-      img: "https://shopping-phinf.pstatic.net/main_4640471/46404713619.20240316071048.jpg",
-      memo: "책갈피 1 메모",
+      text: "너의 장미를 그토록 중요하게 만든 건 너의 장미를 위해 네가 소비한 그 시간이란다",
+      img: "/rose.png",
+      memo: "시간을 들여야 하는 것이 중요하다는 것을 알게 되었다",
     },
   ]);
+
+  console.log("BOOKMARKLIST", bookMarkList);
 
   // 책갈피 모달 변수
   const [bookMarkModalOpen, setBookMarkModalOpen] = useState(false);
@@ -120,7 +77,7 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
                     <img
                       src={bookMark.img}
                       alt={bookMark.text}
-                      width={60}
+                      width={78}
                       height={78}
                     />
                   </div>

@@ -6,7 +6,7 @@ import { useState } from "react";
 
 export default function Main() {
   const [prompt, setPrompt] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState("/rose.png");
 
   const clickHandler = async () => {
     try {
@@ -40,7 +40,13 @@ export default function Main() {
 
   return (
     <div className={styles.container}>
-      <h1>Main Page</h1>
+      <h3
+        style={{
+          textAlign: "center",
+        }}
+      >
+        감명깊은 글귀를 추가하여 책갈피를 생성해보세요.
+      </h3>
       <input
         type="text"
         value={prompt}
@@ -48,8 +54,9 @@ export default function Main() {
           setPrompt(e.target.value);
         }}
       />
-      <Button onClick={clickHandler}>Click me</Button>
-      {imageUrl && <img src={imageUrl} alt="diffusionResult" />}
+      <Button onClick={clickHandler}>책갈피 생성하기</Button>
+      {/* {imageUrl && <img src={imageUrl} alt="diffusionResult" />} */}
+      <img src={imageUrl} alt="diffusionResult" />
       <Navigation value={0} />
     </div>
   );

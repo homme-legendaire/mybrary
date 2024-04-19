@@ -32,6 +32,12 @@ const theme = createTheme({
       bright: "rgba(211, 159, 148, 0.7)",
       light: "rgba(211, 159, 148, 0.04)",
     },
+    third: {
+      main: "#CF6353",
+      dark: "#d05a3e",
+      bright: "rgba(207, 99, 83, 0.7)",
+      light: "rgba(207, 99, 83, 0.04)",
+    },
     mybraryPink: {
       main: "#CF9084",
       dark: "#bb6856",

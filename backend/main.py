@@ -27,18 +27,27 @@ from fastapi.responses import HTMLResponse
 import firebase_admin
 from firebase_admin import credentials
 from fastapi.responses import FileResponse
+from starlette.middleware.cors import CORSMiddleware
 
 # cred = credentials.Certificate("mybrary-5d2c7-firebase-adminsdk-293xd-725a5b12b0.json")
 # firebase_admin.initialize_app(cred)
 
 original = StableDiffusionPipeline.from_pretrained(
-    "CompVis/stable-diffusion-v1-4", torch_dtype=torch.float32, use_safetensors=True,
-    ).to("cpu")
+    "CompVis/stable-diffusion-v1-4", torch_dtype=torch.float16, use_safetensors=True,
+    ).to("mps")
 
 app = FastAPI()
 # 구글 번역기 API 받아오기
 translator = Translator()
 templates = Jinja2Templates(directory='templates')  # 템플릿 파일 위치 설정
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET","POST"],
+    allow_headers=["*"],
+)
 
 # prompt 받아와서 생성이미지 만드는 함수
 def diffusion(prompt):
