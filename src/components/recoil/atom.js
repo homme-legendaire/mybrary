@@ -33,3 +33,64 @@ export const bookMarkListState = atom({
     },
   ],
 });
+
+export const userDataState = atom({
+  key: "userDataState",
+  default: {
+    name: "마이브러리",
+    level: 1,
+    exp: 0,
+    date: "2024.04.12",
+    bookTotal: 12,
+    bookList: [
+      {
+        title: "어린 왕자",
+        genre: "소설",
+      },
+      {
+        title: "마흔에 읽는 쇼펜하우어",
+        genre: "철학",
+      },
+      {
+        title: "마흔에 읽는 쇼펜하우어",
+        genre: "철학",
+      },
+      {
+        title: "마흔에 읽는 쇼펜하우어",
+        genre: "철학",
+      },
+      {
+        title: "불변의 법칙",
+        genre: "경제경영",
+      },
+      {
+        title: "마흔에 읽는 쇼펜하우어",
+        genre: "철학",
+      },
+      {
+        title: "마흔에 읽는 쇼펜하우어",
+        genre: "철학",
+      },
+      {
+        title: "마흔에 읽는 쇼펜하우어",
+        genre: "철학",
+      },
+      {
+        title: "어린 왕자",
+        genre: "소설",
+      },
+      {
+        title: "어린 왕자",
+        genre: "소설",
+      },
+      {
+        title: "어린 왕자",
+        genre: "소설",
+      },
+      {
+        title: "불변의 법칙",
+        genre: "경제경영",
+      },
+    ],
+  },
+});

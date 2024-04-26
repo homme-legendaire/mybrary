@@ -19,7 +19,7 @@
     "@tosspayments/payment-sdk": "^1.6.5",
     "@tosspayments/payment-widget-sdk": "^0.9.3",
     "@vercel/analytics": "^1.0.2",
-    "apexcharts": "^3.44.0",
+    "apexcharts": "^3.49.0",
     "axios": "^1.6.5",
     "babel-runtime": "^6.26.0",
     "cheerio": "^1.0.0-rc.12",
