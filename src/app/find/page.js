@@ -49,8 +49,11 @@ export default function Find() {
     },
   ]);
   const [selectedBook, setSelectedBook] = useState({});
+  const [findLoading, setFindLoading] = useState(false);
+
   const recommendationHandler = () => {
-    setTouched(true);
+    setFindLoading(true);
+    // setTouched(true);
   };
 
   return (
@@ -138,6 +141,11 @@ export default function Find() {
             </>
           )}
         </div>
+      ) : findLoading ? (
+        <div className={styles.body}>
+          <img src="/findLoading.gif" alt="Loading" width={400} height={300} />
+          <span className={styles.findBookText}>추천 도서 탐색중입니다...</span>
+        </div>
       ) : (
         <div className={styles.body}>
           <svg width="71" height="71" viewBox="0 0 71 71" fill="none">
@@ -159,7 +167,6 @@ export default function Find() {
               />
             </defs>
           </svg>
-
           <span>나만의 도서 추천 받기</span>
           <Button
             fullWidth
