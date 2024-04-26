@@ -2,6 +2,7 @@
 import styles from "./page.module.css";
 import Navigation from "@/components/Navigation";
 import { Button } from "@mui/material";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Find() {
@@ -48,7 +49,6 @@ export default function Find() {
     },
   ]);
   const [selectedBook, setSelectedBook] = useState({});
-
   const recommendationHandler = () => {
     setTouched(true);
   };
@@ -78,6 +78,65 @@ export default function Find() {
               </div>
             ))}
           </div>
+          {Object.keys(selectedBook).length > 0 && (
+            <>
+              <div className={styles.bookTitleContainer}>
+                <span className={styles.bookTitle}>{selectedBook.title}</span>
+                <div className={styles.bookSubTitle}>
+                  <span>
+                    {selectedBook.author?.length > 15
+                      ? selectedBook.author.slice(0, 15) + ".."
+                      : selectedBook.author}
+                  </span>
+                  <span>
+                    {selectedBook.publisher?.length > 15
+                      ? selectedBook.publisher.slice(0, 15) + ".."
+                      : selectedBook.publisher}
+                  </span>
+                  <span>{selectedBook.pubdate}</span>
+                </div>
+              </div>
+              <div className={styles.bookInfo}>
+                <span className={styles.bookDescriptionSpan}>
+                  {selectedBook.description}
+                </span>
+              </div>
+              <div className={styles.btnContainer}>
+                <Button
+                  fullWidth
+                  sx={{
+                    fontSize: "1.25rem",
+                    color: "#ffffff",
+                    backgroundColor: "#222849",
+                    "&:hover": {
+                      backgroundColor: "#272200",
+                    },
+                  }}
+                  onClick={() => {
+                    setTouched(false);
+                    setSelectedBook({});
+                  }}
+                >
+                  다시하기
+                </Button>
+                <Button
+                  fullWidth
+                  sx={{
+                    fontSize: "1.25rem",
+                    color: "#ffffff",
+                    backgroundColor: "primary.main",
+                    "&:hover": {
+                      backgroundColor: "primary.dark",
+                    },
+                  }}
+                >
+                  <Link href={selectedBook?.link} target="_blank">
+                    구매하기
+                  </Link>
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       ) : (
         <div className={styles.body}>

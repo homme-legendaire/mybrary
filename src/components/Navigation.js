@@ -35,7 +35,7 @@ export default function Navigation({ value }) {
           onClick={() => router.push("/main")}
           sx={{
             "& .MuiBottomNavigationAction-label": {
-              fontSize: "1.1rem !important",
+              fontSize: "1rem !important",
             },
           }}
         />
@@ -45,7 +45,7 @@ export default function Navigation({ value }) {
           onClick={() => router.push("/mybrary")}
           sx={{
             "& .MuiBottomNavigationAction-label": {
-              fontSize: "1.1rem !important",
+              fontSize: "1rem !important",
             },
           }}
         />
@@ -55,7 +55,7 @@ export default function Navigation({ value }) {
           onClick={() => router.push("/find")}
           sx={{
             "& .MuiBottomNavigationAction-label": {
-              fontSize: "1.1rem !important",
+              fontSize: "1rem !important",
             },
           }}
         />
@@ -65,7 +65,7 @@ export default function Navigation({ value }) {
           onClick={() => router.push("/mypage")}
           sx={{
             "& .MuiBottomNavigationAction-label": {
-              fontSize: "1.1rem !important",
+              fontSize: "1rem !important",
             },
           }}
         />

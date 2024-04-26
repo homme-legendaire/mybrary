@@ -8,7 +8,7 @@
   overflow: auto;
   padding: 12px;
   border-radius: 4px;
-  font-size: 14px;
+
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -29,12 +29,11 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 12px;
 }
 
 .title {
-  font-size: 14px;
   font-weight: bold;
 }
 
@@ -55,7 +54,6 @@
 }
 
 .partTitle {
-  font-size: 14px;
   font-weight: bold;
   margin-left: 4px;
 }
@@ -63,7 +61,7 @@
 .bookDescriptionSpan {
   height: 120px;
   overflow: auto;
-  font-size: 12px;
+  font-size: 14px;
   background-color: #f5f3f3;
   padding: 4px;
   border-radius: 8px;

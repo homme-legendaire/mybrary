@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  padding: 76px 8px 68px 8px;
+  padding: 92px 8px 68px 8px;
 }
 
 .modal {
@@ -15,7 +15,7 @@
   height: calc(100vh - 128px);
   padding: 12px;
   border-radius: 4px;
-  font-size: 14px;
+
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -78,11 +78,10 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .searchResultItemTitle {
-  font-size: 14px;
   font-weight: bold;
 }
 
@@ -105,11 +104,10 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .selectedBookTitle {
-  font-size: 14px;
   font-weight: bold;
 }
 
@@ -142,10 +140,9 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .savedBookItemTitle {
-  font-size: 14px;
   font-weight: bold;
 }
