@@ -89,6 +89,7 @@ original = StableDiffusionPipeline.from_pretrained(
 translator = Translator()
 templates = Jinja2Templates(directory='templates')  # 템플릿 파일 위치 설정
 
+count=0
 # prompt 받아와서 생성이미지 만드는 함수
 def diffusion(prompt):
     
@@ -110,14 +111,15 @@ def diffusion(prompt):
         generator=generator,
         num_images_per_prompt=NUM_IMAGES_PER_PROMPT
         ).images
-        images[i].save(f'tmp{i}.jpg',"JPEG")
+        images[i].save(f'tmp{count}.jpg',"JPEG")
     end = time.time_ns()
+    conut+=1
     original_sd = f"{(end - start) / 1e6:.1f}"
 
 
 
     print(f"Execution time -- {original_sd} ms\n")
-    return f'tmp{i}.jpg'
+    return f'tmp{count}.jpg'
 
 
 
