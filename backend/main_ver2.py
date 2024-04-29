@@ -167,7 +167,6 @@ class front_signup(BaseModel):
     email:str
     phoneNumber:str
     name:str
-    referralCode:str
 @app.post('/signup') ## referel 코드 ## 추후 사전예약자들만 주는 쿠폰 삽입해야함 if문으로 처리하기로 함 이메일로 체크함 이 이메일이면 쿠폰 리스트에 추가
 def signup(data:front_signup,token : Optional[str] = Header(None)):
     try:
