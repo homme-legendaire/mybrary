@@ -23,8 +23,8 @@ import { useRecoilCallback, useRecoilState } from "recoil";
 import theme from "@/components/ThemeRegistry/theme.js";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { setCookie, parseCookies, destroyCookie } from "nookies";
-// import auth from "@/firebase/fireauth.js";
-// import { loginState, userDataState } from "@/components/recoil/atom.js";
+import auth from "@/firebase/fireauth.js";
+import { userDataState } from "@/components/recoil/atom.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
 import { LoadingButton } from "@mui/lab";
 import Fernet from "fernet";
@@ -65,17 +65,6 @@ export default function SignUp() {
 
   const fernetKey = process.env.FERNET_DECRYPTION_KEY;
 
-  const decryptData = (encryptedData, key) => {
-    const secret = new Fernet.Secret(key);
-    const token = new Fernet.Token({
-      secret: secret,
-      token: encryptedData,
-      ttl: 0,
-    });
-
-    return token.decode();
-  };
-
   useEffect(() => {
     if (emailCertCheck) {
       const interval = setInterval(() => {
@@ -103,79 +92,14 @@ export default function SignUp() {
           createdAt: createdDate,
           email: email,
           name: name,
-          payment: "",
-          paymentNumber: "",
           phoneNumber: phoneNumber,
-          subscribeAt: "",
-          subscribeEndAt: "",
-          subscribe_level: 0,
-          termsOfUseCheck: termsOfUseCheck,
-          point: 0,
-          firstPayment: false,
+          bookList: [],
         });
 
-        // 홈으로 주소 이동
-        router.push(`/${redirect ? redirect.split("/")[1] : ""}`);
+        // 메인 화면으로 주소 이동
+        router.push("/main");
       }
   );
-
-  //   const signUpHandler = async (e) => {
-  //     e.preventDefault();
-  //     setSignUpLoading(true);
-  //     const credential = await createUserWithEmailAndPassword(
-  //       auth,
-  //       email,
-  //       password
-  //     );
-  //     const user = credential.user;
-  //     // console.log(user);
-  //     const idToken = await credential.user.getIdToken();
-  //     const session = await fetch(`${process.env.PRODUCTION_SERVER_HOST}/login`, {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         token: idToken,
-  //       },
-  //     });
-  //     const encryptedData = await session.text();
-  //     const decryptedData = decryptData(encryptedData, fernetKey);
-  //     const sessionJson = JSON.parse(decryptedData);
-  //     // console.log("SESSION", sessionJson);
-  //     console.log(session.status);
-  //     if (session.status === 200) {
-  //       // console.log("login success!");
-  //       destroyCookie(null, "CSRFToken");
-  //       setCookie(null, "CSRFToken", sessionJson.csrf_token, {
-  //         maxAge: 5 * 24 * 60 * 60,
-  //         path: "/",
-  //         secure: true,
-  //       });
-  //       //nookies 라이브러리를 사용하여 쿠키를 생성합니다.
-  //       destroyCookie(null, "token");
-  //       setCookie(null, "token", sessionJson.session_cookie, {
-  //         maxAge: 5 * 24 * 60 * 60,
-  //         path: "/",
-  //         secure: true,
-  //       });
-  //       const updatedoc = await fetch(
-  //         `${process.env.PRODUCTION_SERVER_HOST}/signup`,
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             token: parseCookies(null, "token").token,
-  //             CSRFToken: parseCookies(null, "CSRFToken").CSRFToken,
-  //           },
-  //           body: JSON.stringify({
-  //             email: email,
-  //             name: name,
-  //             phoneNumber: phoneNumber,
-  //           }),
-  //         }
-  //       );
-  //       updateUserDataAndRedirect();
-  //     }
-  //   };
 
   const signUpHandler = async (e) => {
     e.preventDefault();
@@ -193,6 +117,51 @@ export default function SignUp() {
     ) {
       alert("입력값을 확인해주세요.");
       return;
+    }
+    setSignUpLoading(true);
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = credential.user;
+    // console.log(user);
+    const idToken = await credential.user.getIdToken();
+    const session = await fetch(`${process.env.PRODUCTION_SERVER_HOST}/login`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        token: idToken,
+      },
+    });
+    const sessionJson = await session.json();
+    // console.log("SESSION", sessionJson);
+    console.log(session.status);
+    if (session.status === 200) {
+      // console.log("login success!");
+      //nookies 라이브러리를 사용하여 쿠키를 생성합니다.
+      destroyCookie(null, "token");
+      setCookie(null, "token", sessionJson.session_cookie, {
+        maxAge: 5 * 24 * 60 * 60,
+        path: "/",
+        secure: true,
+      });
+      const updatedoc = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+          },
+          body: JSON.stringify({
+            email: email,
+            name: name,
+            phoneNumber: phoneNumber,
+          }),
+        }
+      );
+      updateUserDataAndRedirect();
     }
   };
 

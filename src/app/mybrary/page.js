@@ -286,7 +286,7 @@ export default function Mybrary() {
             },
           }}
         >
-          {sortingList.map((item, idx) => {
+          {sortingList?.map((item, idx) => {
             return (
               <MenuItem key={idx} value={item}>
                 {item}
@@ -295,7 +295,7 @@ export default function Mybrary() {
           })}
         </Select>
         <div className={styles.savedBookList}>
-          {savedBookList.map((item, idx) => (
+          {savedBookList?.map((item, idx) => (
             <div
               key={idx}
               className={styles.savedBookItem}

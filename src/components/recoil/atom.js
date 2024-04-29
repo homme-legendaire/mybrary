@@ -23,74 +23,21 @@ export const savedBookListState = atom({
   // effects_UNSTABLE: [persistAtom],
 });
 
-export const bookMarkListState = atom({
-  key: "bookMarkListState",
-  default: [
-    {
-      text: "너의 장미를 그토록 중요하게 만든 건 너의 장미를 위해 네가 소비한 그 시간이란다",
-      img: "/rose.png",
-      memo: "시간을 들여야 하는 것이 중요하다는 것을 알게 되었다",
-    },
-  ],
+export const bookMarkState = atom({
+  key: "bookMarkState",
+  default: {
+    text: "너의 장미를 그토록 중요하게 만든 건 너의 장미를 위해 네가 소비한 그 시간이란다",
+    img: "/rose.png",
+    memo: "시간을 들여야 하는 것이 중요하다는 것을 알게 되었다",
+  },
 });
 
 export const userDataState = atom({
   key: "userDataState",
-  default: {
-    name: "마이브러리",
-    level: 1,
-    exp: 0,
-    date: "2024.04.12",
-    bookTotal: 12,
-    bookList: [
-      {
-        title: "어린 왕자",
-        genre: "소설",
-      },
-      {
-        title: "마흔에 읽는 쇼펜하우어",
-        genre: "철학",
-      },
-      {
-        title: "마흔에 읽는 쇼펜하우어",
-        genre: "철학",
-      },
-      {
-        title: "마흔에 읽는 쇼펜하우어",
-        genre: "철학",
-      },
-      {
-        title: "불변의 법칙",
-        genre: "경제경영",
-      },
-      {
-        title: "마흔에 읽는 쇼펜하우어",
-        genre: "철학",
-      },
-      {
-        title: "마흔에 읽는 쇼펜하우어",
-        genre: "철학",
-      },
-      {
-        title: "마흔에 읽는 쇼펜하우어",
-        genre: "철학",
-      },
-      {
-        title: "어린 왕자",
-        genre: "소설",
-      },
-      {
-        title: "어린 왕자",
-        genre: "소설",
-      },
-      {
-        title: "어린 왕자",
-        genre: "소설",
-      },
-      {
-        title: "불변의 법칙",
-        genre: "경제경영",
-      },
-    ],
-  },
+  default: {},
+});
+
+export const recommendationListState = atom({
+  key: "recommendationListState",
+  default: [],
 });

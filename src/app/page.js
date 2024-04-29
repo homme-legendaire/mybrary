@@ -18,20 +18,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-// import auth from "@/firebase/fireauth";
-// import {
-//   signInWithEmailAndPassword,
-//   createUserWithEmailAndPassword,
-// } from "firebase/auth";
+import auth from "@/firebase/fireauth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRecoilState } from "recoil";
 import { setCookie, parseCookies, destroyCookie } from "nookies";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-// import { userDataState } from "@/components/recoil/atom.js";
+import { userDataState } from "@/components/recoil/atom.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
 import Fernet from "fernet";
 import styles from "./page.module.css";
-import Image from "next/image";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -39,7 +35,7 @@ export default function Login() {
   const [emailWarning, setEmailWarning] = useState("");
   const [passwordWarning, setPasswordWarning] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  // const [userData, setUserData] = useRecoilState(userDataState);
+  const [userData, setUserData] = useRecoilState(userDataState);
   const router = useRouter();
   const [loginLoading, setloginLoading] = useState(false);
   // const [couponList, setCouponList] = useRecoilState(couponListState);
@@ -55,17 +51,6 @@ export default function Login() {
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [snackBarArticle, setSnackBarArticle] = useState("");
   const [snackBarStatus, setSnackBarStatus] = useState("");
-
-  const decryptData = (encryptedData, key) => {
-    const secret = new Fernet.Secret(key);
-    const token = new Fernet.Token({
-      secret: secret,
-      token: encryptedData,
-      ttl: 0,
-    });
-
-    return token.decode();
-  };
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
@@ -91,179 +76,150 @@ export default function Login() {
     }
   }, [loginTry]);
 
-  const fetchUserDb = async () => {
-    try {
-      const res = await fetch(
-        `${process.env.PRODUCTION_SERVER_HOST}/db/userInfo`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: parseCookies(null, "token").token,
-            CSRFToken: parseCookies(null, "CSRFToken").CSRFToken,
-          },
-        }
-      );
-      const encryptedData = await res.text();
-      const decryptedData = decryptData(encryptedData, fernetKey);
-      const resJson = JSON.parse(decryptedData);
-      const resp = await fetch(
-        `${process.env.PRODUCTION_SERVER_HOST}/db/coupon`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: parseCookies(null, "token").token,
-            CSRFToken: parseCookies(null, "CSRFToken").CSRFToken,
-          },
-        }
-      );
-      const encryptedData2 = await resp.text();
-      const decryptedData2 = decryptData(encryptedData2, fernetKey);
-      const respJson = JSON.parse(decryptedData2);
-      let updatedCouponList = [];
-      if (respJson.result === "success") {
-        for (let idx in respJson.data) {
-          updatedCouponList.push(respJson.data[idx]);
-        }
-      }
-      if (resJson.result === "success") {
-        // setUserData({
-        //   createdAt: resJson.data.createdAt,
-        //   email: resJson.data.email,
-        //   name: resJson.data.name,
-        //   payment: resJson.data.payment,
-        //   paymentNumber: resJson.data.paymentNumber,
-        //   phoneNumber: resJson.data.phoneNumber,
-        //   referralCode: resJson.data.referralCode,
-        //   subscribeAt: resJson.data.subscribeAt,
-        //   subscribeEndAt: resJson.data.subscribeEndAt,
-        //   subscribe_level: resJson.data.subscribe_level,
-        //   termsOfUseCheck: resJson.data.termsOfUseCheck,
-        //   point: resJson.data.point,
-        //   couponList: updatedCouponList,
-        //   extend: resJson.data.extend,
-        //   willUsingPoint: resJson.data.willUsingPoint,
-        //   prevDeleteUser: resJson.data.prevDeleteUser,
-        //   firstPayment: resJson.data.firstPayment,
-        //   freeTrial: resJson.data.freeTrial,
-        // });
-      } else {
-        setSnackBarOpen(true);
-        setSnackBarStatus("error");
-        setSnackBarArticle(
-          "사용자 정보 불러오기에 실패했습니다. 새로고침 후 다시 시도해주세요."
-        );
-      }
-    } catch (err) {
-      setSnackBarOpen(true);
-      setSnackBarStatus("error");
-      setSnackBarArticle(
-        `오류가 발생했습니다. 새로고침 후 다시 시도해주세요. ${err}`
-      );
-    }
-  };
-
-  // const loginHandler = async (e) => {
-  //   e.preventDefault();
-  //   setLoginTry(loginTry + 1);
-  //   if (typeof window !== "undefined") {
-  //     localStorage.setItem("toggle", saveId);
-  //     if (saveId) {
-  //       localStorage.setItem("email", email);
-  //     } else {
-  //       localStorage.setItem("email", "");
-  //     }
-  //   }
-  //   if (email !== "" && password !== "") {
-  //     setloginLoading(true);
-  //     // console.log("login!");
-  //     let credential;
-  //     //  console.log(parseCookies(null, 'token').token);
-  //     //   const res = await fetch('http://127.0.0.1:8000/cookietest', {
-  //     //     method: 'GET',
-  //     //     headers: {
-  //     //         'Content-Type': 'application/json',
-  //     //         token: parseCookies(null, 'token').token,
-  //     //         CSRFToken: parseCookies(null, 'CSRFToken').CSRFToken,
-  //     //     },
-  //     // });
-  //     // const resJson = await res.json();
-  //     // console.log(resJson);
-  //     try {
-  //       credential = await signInWithEmailAndPassword(auth, email, password);
-  //     } catch (error) {
-  //       if (error.code === "auth/user-not-found") {
-  //         setSnackBarOpen(true);
-  //         setSnackBarStatus("error");
-  //         setSnackBarArticle("존재하지 않는 아이디입니다.");
-  //         setloginLoading(false);
-  //       }
-  //       if (error.code === "auth/wrong-password") {
-  //         setSnackBarOpen(true);
-  //         setSnackBarStatus("error");
-  //         setSnackBarArticle("비밀번호가 일치하지 않습니다.");
-  //         setloginLoading(false);
-  //       }
-  //       return;
-  //     }
-  //     const idToken = await credential.user.getIdToken();
-  //     // console.log(idToken);
-  //     const session = await fetch(
-  //       `${process.env.PRODUCTION_SERVER_HOST}/login`,
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           token: idToken,
-  //         },
-  //       }
-  //     );
-  //     const encryptedData = await session.text();
-  //     const decryptedData = decryptData(encryptedData, fernetKey);
-  //     const sessionJson = JSON.parse(decryptedData);
-  //     // console.log(sessionJson);
-  //     // console.log(session.status);
-  //     if (session.status === 200) {
-  //       // console.log("login success!");
-  //       destroyCookie(null, "CSRFToken");
-  //       setCookie(null, "CSRFToken", sessionJson.csrf_token, {
-  //         maxAge: 5 * 24 * 60 * 60,
-  //         path: "/",
-  //         secure: true,
-  //       });
-  //       //nookies 라이브러리를 사용하여 쿠키를 생성합니다.
-  //       destroyCookie(null, "token");
-  //       setCookie(null, "token", sessionJson.session_cookie, {
-  //         maxAge: 5 * 24 * 60 * 60,
-  //         path: "/",
-  //         secure: true,
-  //       });
-  //       await fetchUserDb();
-  //       setUserState(true);
-  //       // 홈으로 주소 이동
-  //       console.log(redirect);
-  //       router.push(`${redirect ? redirect : "/"}`);
-  //     }
-  //   } else {
-  //     if (email === "") {
-  //       setEmailWarning("이메일을 입력해주세요.");
-  //     } else if (!email.includes("@") || !email.includes(".")) {
-  //       setEmailWarning("이메일 형식으로 입력해주세요. ex)@naver.com");
-  //     } else {
-  //       setEmailWarning("");
-  //     }
-
-  //     if (password === "") {
-  //       setPasswordWarning("비밀번호를 입력해주세요.");
-  //     } else {
-  //       setPasswordWarning("");
-  //     }
-  //   }
-  // };
-
-  const loginHandler = (e) => {
+  const loginHandler = async (e) => {
     e.preventDefault();
+    setLoginTry(loginTry + 1);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("toggle", saveId);
+      if (saveId) {
+        localStorage.setItem("email", email);
+      } else {
+        localStorage.setItem("email", "");
+      }
+    }
+    if (email !== "" && password !== "") {
+      setloginLoading(true);
+      let credential;
+      try {
+        credential = await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        if (error.code === "auth/user-not-found") {
+          setSnackBarOpen(true);
+          setSnackBarStatus("error");
+          setSnackBarArticle("존재하지 않는 아이디입니다.");
+          setloginLoading(false);
+        }
+        if (error.code === "auth/wrong-password") {
+          setSnackBarOpen(true);
+          setSnackBarStatus("error");
+          setSnackBarArticle("비밀번호가 일치하지 않습니다.");
+          setloginLoading(false);
+        }
+        return;
+      }
+      const idToken = await credential.user.getIdToken();
+      // console.log(idToken);
+      const session = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/login`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: idToken,
+          },
+        }
+      );
+      const sessionJson = await session.json();
+      // console.log(sessionJson);
+      // console.log(session.status);
+      if (session.status === 200) {
+        // console.log("login success!");
+        //nookies 라이브러리를 사용하여 쿠키를 생성합니다.
+        destroyCookie(null, "token");
+        setCookie(null, "token", sessionJson.session_cookie, {
+          maxAge: 5 * 24 * 60 * 60,
+          path: "/",
+          secure: true,
+        });
+
+        let tempUserData = {};
+
+        try {
+          const res = await fetch(
+            `${process.env.PRODUCTION_SERVER_HOST}/userInfo`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                token: parseCookies(null, "token").token,
+              },
+            }
+          );
+          const resJson = await res.json();
+          console.log(resJson);
+          if (resJson.result === "success") {
+            console.log("USER", resJson.user);
+            tempUserData = {
+              ...tempUserData,
+              ...resJson.user,
+            };
+          } else {
+            setSnackBarOpen(true);
+            setSnackBarStatus("error");
+            setSnackBarArticle(
+              "사용자 정보 불러오기에 실패했습니다. 새로고침 후 다시 시도해주세요."
+            );
+          }
+        } catch (err) {
+          setSnackBarOpen(true);
+          setSnackBarStatus("error");
+          setSnackBarArticle(
+            `오류가 발생했습니다. 새로고침 후 다시 시도해주세요. ${err}`
+          );
+          return;
+        }
+        try {
+          const res = await fetch(
+            `${process.env.PRODUCTION_SERVER_HOST}/userBook`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                token: parseCookies(null, "token").token,
+              },
+            }
+          );
+          const resJson = await res.json();
+          console.log(resJson);
+          if (resJson.result === "success") {
+            console.log("USER", resJson.book_list);
+            tempUserData = {
+              ...tempUserData,
+              bookList: resJson.book_list,
+            };
+          } else {
+            setSnackBarOpen(true);
+            setSnackBarStatus("error");
+            setSnackBarArticle(
+              "사용자 정보 불러오기에 실패했습니다. 새로고침 후 다시 시도해주세요."
+            );
+          }
+        } catch (err) {
+          setSnackBarOpen(true);
+          setSnackBarStatus("error");
+          setSnackBarArticle(
+            `오류가 발생했습니다. 새로고침 후 다시 시도해주세요. ${err}`
+          );
+          return;
+        }
+        // 홈으로 주소 이동
+        router.push("/main");
+      }
+    } else {
+      if (email === "") {
+        setEmailWarning("이메일을 입력해주세요.");
+      } else if (!email.includes("@") || !email.includes(".")) {
+        setEmailWarning("이메일 형식으로 입력해주세요. ex)@naver.com");
+      } else {
+        setEmailWarning("");
+      }
+
+      if (password === "") {
+        setPasswordWarning("비밀번호를 입력해주세요.");
+      } else {
+        setPasswordWarning("");
+      }
+    }
   };
 
   const inputBlurHandler = (e) => {
@@ -448,23 +404,21 @@ export default function Login() {
             </LoadingButton>
           ) : (
             <>
-              <Link href="/main">
-                <Button
-                  type="submit"
-                  fullWidth
-                  sx={{
-                    fontSize: "1.25rem",
-                    color: "#ffffff",
-                    backgroundColor: "primary.main",
-                    "&:hover": {
-                      backgroundColor: "primary.dark",
-                    },
-                  }}
-                  disabled={emailDisabled}
-                >
-                  로그인
-                </Button>
-              </Link>
+              <Button
+                type="submit"
+                fullWidth
+                sx={{
+                  fontSize: "1.25rem",
+                  color: "#ffffff",
+                  backgroundColor: "primary.main",
+                  "&:hover": {
+                    backgroundColor: "primary.dark",
+                  },
+                }}
+                disabled={emailDisabled}
+              >
+                로그인
+              </Button>
             </>
           )}
           <Grid

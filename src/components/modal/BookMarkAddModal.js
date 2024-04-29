@@ -1,7 +1,7 @@
 import { Modal, IconButton, Button, TextField } from "@mui/material";
 import styles from "./BookMarkAddModal.module.css";
 import { useEffect, useState } from "react";
-import { bookMarkListState } from "../recoil/atom";
+import { bookMarkState } from "../recoil/atom";
 import { useRecoilState } from "recoil";
 
 export default function BookMarkAddModal({ open, onClose }) {
@@ -9,7 +9,7 @@ export default function BookMarkAddModal({ open, onClose }) {
   const [imageUrl, setImageUrl] = useState("/rose.png");
   const [memo, setMemo] = useState("");
 
-  const [bookMarkList, setBookMarkList] = useRecoilState(bookMarkListState);
+  const [bookMarkList, setBookMarkList] = useRecoilState(bookMarkState);
 
   const addHandler = async () => {
     try {
@@ -41,14 +41,11 @@ export default function BookMarkAddModal({ open, onClose }) {
 
   const saveHandler = async () => {
     try {
-      setBookMarkList([
-        ...bookMarkList,
-        {
-          text: prompt,
-          img: imageUrl,
-          memo: "시간을 들여야 하는 것이 중요하다는 것을 알게 되었다",
-        },
-      ]);
+      setBookMarkList({
+        text: prompt,
+        img: imageUrl,
+        memo: "시간을 들여야 하는 것이 중요하다는 것을 알게 되었다",
+      });
     } catch (err) {
       alert(`에러가 발생했습니다. ${err}`);
     }

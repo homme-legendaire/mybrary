@@ -5,23 +5,21 @@ import { useState } from "react";
 import BookMarkModal from "./BookMarkModal";
 import BookMarkAddModal from "./BookMarkAddModal";
 import { useRecoilState } from "recoil";
-import { bookMarkListState } from "../recoil/atom";
+import { bookMarkState } from "../recoil/atom";
 
 export default function SelectedBookControlModal({ open, onClose, book }) {
-  const [bookMarkList, setBookMarkList] = useRecoilState(bookMarkListState);
+  const [bookMark, setBookMark] = useRecoilState(bookMarkState);
 
-  console.log("BOOKMARKLIST", bookMarkList);
+  console.log("BOOKMARK", bookMark);
 
   // 책갈피 모달 변수
   const [bookMarkModalOpen, setBookMarkModalOpen] = useState(false);
-  const [selectedBookMark, setSelectedBookMark] = useState({});
 
   // 책갈피 추가 모달 변수
   const [bookMarkAddModalOpen, setBookMarkAddModalOpen] = useState(false);
   const [bookMarkAddModalText, setBookMarkAddModalText] = useState("");
 
   const bookMarkModalOpenHandler = (key) => {
-    setSelectedBookMark(bookMarkList[key]);
     setBookMarkModalOpen(true);
   };
 
@@ -30,7 +28,6 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
       <BookMarkModal
         open={bookMarkModalOpen}
         onClose={() => setBookMarkModalOpen(false)}
-        bookMark={selectedBookMark}
       />
       <BookMarkAddModal
         open={bookMarkAddModalOpen}
@@ -76,21 +73,20 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
             </div>
             <div className={styles.bookDescription}>
               <span className={styles.partTitle}>책갈피</span>
-              <div className={styles.bookMarkList}>
-                {bookMarkList.map((bookMark, index) => (
-                  <div
-                    key={index}
-                    className={styles.bookMark}
-                    onClick={() => bookMarkModalOpenHandler(index)}
-                  >
-                    <img
-                      src={bookMark.img}
-                      alt={bookMark.text}
-                      width={78}
-                      height={78}
-                    />
-                  </div>
-                ))}
+              <div className={styles.bookMark}>
+                {/* {Object.keys(bookMark)?.map((bookMark, index) => ( */}
+                <div
+                  className={styles.bookMark}
+                  onClick={() => bookMarkModalOpenHandler(index)}
+                >
+                  <img
+                    src={bookMark.img}
+                    alt={bookMark.text}
+                    width={78}
+                    height={78}
+                  />
+                </div>
+                {/* ))} */}
               </div>
             </div>
           </div>

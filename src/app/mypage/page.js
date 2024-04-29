@@ -9,23 +9,29 @@ import UserBookDonutChart from "@/components/charts/UserBookDonutChart";
 export default function Find() {
   const userData = useRecoilValue(userDataState);
 
+  console.log("USER", userData);
+
   const favGenre = () => {
-    const genreList = userData?.bookList.map((book) => book.genre);
-    const genreCount = genreList.reduce((acc, cur) => {
+    const genreList = userData?.bookList?.map((book) => book.genre);
+    const genreCount = genreList?.reduce((acc, cur) => {
       acc[cur] = (acc[cur] || 0) + 1;
       return acc;
     }, {});
 
-    const maxGenre = Object.keys(genreCount).reduce((a, b) =>
-      genreCount[a] > genreCount[b] ? a : b
-    );
+    console.log("GENRE", genreCount);
 
-    return maxGenre;
+    if (Object.keys(genreCount)?.length > 0) {
+      const maxGenre = Object.keys(genreCount)?.reduce((a, b) =>
+        genreCount[a] > genreCount[b] ? a : b
+      );
+      return maxGenre;
+    }
+    return "";
   };
 
   const genreChartLabel = () => {
-    const genreList = userData?.bookList.map((book) => book.genre);
-    const genreCount = genreList.reduce((acc, cur) => {
+    const genreList = userData?.bookList?.map((book) => book.genre);
+    const genreCount = genreList?.reduce((acc, cur) => {
       acc[cur] = (acc[cur] || 0) + 1;
       return acc;
     }, {});
@@ -35,20 +41,19 @@ export default function Find() {
 
   const genreChartPercentageLabel = () => {
     const genreList = genreChartLabel();
-    const genreTotal = Object.values(genreList).reduce((a, b) => a + b);
+    if (Object.values(genreList)?.length === 0) return [];
+    const genreTotal = Object.values(genreList)?.reduce((a, b) => a + b);
     const genreKey = Object.keys(genreList);
-    const genrePercentage = Object.values(genreList).map(
+    const genrePercentage = Object.values(genreList)?.map(
       (genre) => (genre / genreTotal) * 100
     );
 
-    const genrePercentageLabel = genreKey.map((genre, index) => {
+    const genrePercentageLabel = genreKey?.map((genre, index) => {
       return { [genre]: genrePercentage[index] };
     });
 
     return genrePercentageLabel;
   };
-
-  console.log(genreChartPercentageLabel());
 
   return (
     <div className={styles.container}>
@@ -69,18 +74,20 @@ export default function Find() {
           </div>
           <div className={styles.infoContainer}>
             <span>레벨</span>
-            <span className={styles.infoLabel}>{userData?.level}</span>
+            <span className={styles.infoLabel}>
+              {userData?.level || "초보독자"}
+            </span>
           </div>
           <div className={styles.infoContainer}>
             <span>가입일</span>
-            <span className={styles.infoLabel}>{userData?.date}</span>
+            <span className={styles.infoLabel}>{userData?.createdAt}</span>
           </div>
         </div>
       </div>
       <div className={styles.bookInfo}>
         <div className={styles.bookInfoContainer}>
           <span>전체 독서량</span>
-          <span className={styles.bookInfoLabel}>{userData?.bookTotal}</span>
+          <span className={styles.bookInfoLabel}>{userData?.record_book}</span>
         </div>
         <div className={styles.bookInfoContainer}>
           <span>최애 장르</span>
@@ -95,7 +102,7 @@ export default function Find() {
           </div>
           <div className={styles.genreChartLabel}>
             {genreChartPercentageLabel()?.map((genre) => (
-              <div className={styles.genreChartLabelContainer}>
+              <div className={styles.genreChartLabelContainer} key={genre}>
                 <span>{Object.keys(genre)[0]}</span>
                 <span>{Math.round(Object.values(genre)[0])}%</span>
               </div>

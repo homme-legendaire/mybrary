@@ -15,7 +15,7 @@ export default function UserBookDonutChart() {
   const [series, setSeries] = useState({});
 
   useEffect(() => {
-    const genreList = userData?.bookList.map((book) => book.genre);
+    const genreList = userData?.bookList?.map((book) => book.genre);
     const genreCount = genreList.reduce((acc, cur) => {
       acc[cur] = (acc[cur] || 0) + 1;
       return acc;

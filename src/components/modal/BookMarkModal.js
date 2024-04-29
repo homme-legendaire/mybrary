@@ -1,8 +1,11 @@
 import { Modal, IconButton } from "@mui/material";
 import styles from "./BookMarkModal.module.css";
 import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { bookMarkState } from "../recoil/atom";
 
-export default function BookMarkModal({ open, onClose, bookMark }) {
+export default function BookMarkModal({ open, onClose }) {
+  const [bookMark, setBookMark] = useRecoilState(bookMarkState);
   const [frontSide, setFrontSide] = useState(true);
   const [bookMarkMemoClicked, setBookMarkMemoClicked] = useState(false);
   const [bookMarkMemo, setBookMarkMemo] = useState("");
@@ -10,8 +13,6 @@ export default function BookMarkModal({ open, onClose, bookMark }) {
   useEffect(() => {
     setBookMarkMemo(bookMark.memo);
   }, [bookMark]);
-
-  console.log(bookMark);
 
   const flipHandler = () => {
     setFrontSide(!frontSide);
@@ -28,7 +29,7 @@ export default function BookMarkModal({ open, onClose, bookMark }) {
     e.stopPropagation();
   };
 
-  console.log("BOOKMARK", bookMark);
+  console.log("bookMark", bookMark);
 
   return (
     <Modal open={open} onClose={onClose} disableAutoFocus>

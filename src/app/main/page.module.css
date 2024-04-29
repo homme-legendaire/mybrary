@@ -4,4 +4,137 @@
   height: 100vh;
   width: 100vw;
   padding: 92px 8px 68px 8px;
+  gap: 8px;
+}
+
+.headTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0px 12px;
+}
+
+.mybrary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mybraryContent {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  background-color: rgba(235, 227, 203, 0.4);
+  padding: 8px;
+  border-radius: 5%;
+}
+
+.mybraryText {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mybraryTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.mybraryDescription {
+  font-size: 14px;
+}
+
+.mybraryDate {
+  font-size: 14px;
+  text-align: end;
+  margin: 0 8px;
+}
+
+.bookMarkImg {
+  width: 50%;
+  border-radius: 10%;
+}
+
+.mybraryLink {
+  text-align: end;
+  margin: 0 12px;
+}
+
+.recommendationContent {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(146, 142, 148, 0.2);
+  padding: 8px;
+  margin: 0 -8px;
+  gap: 8px;
+}
+
+.bookCoverImg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.bestSellerContent {
+  display: flex;
+  gap: 16px;
+  height: auto;
+  overflow-x: scroll;
+  padding: 8px;
+}
+
+.bestSeller {
+  display: flex;
+  min-width: 80%;
+  gap: 24px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 10%;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.bestSellerCoverImg {
+  width: 100%;
+  border-radius: 10%;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bestSellerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px;
+  margin-top: 4px;
+}
+
+.bestSellerTitle {
+  font-weight: 600;
+}
+
+.bestSellerDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.bestSellerRating {
+  display: flex;
+  gap: 8px;
+}
+
+.emptyContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  background-color: rgba(235, 227, 203, 0.4);
+  padding: 32px;
+  border-radius: 5%;
 }
