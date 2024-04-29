@@ -596,3 +596,61 @@ def userBook(token: Optional[str] = Header(None)):
     except Exception as e:
         return {"result": "fail", "error": str(e)}
 
+@app.get("/recommendPage")
+def findRecommend(token: Optional[str] = Header(None)):
+    '''추천 받았던 책이 있다면 가져오는 API'''
+    try:
+        if token == "undefined":
+            return {"result": "fail"}
+        
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        if user_info:
+            if user['prev_recommend'] == "":
+                return {"result": "empty"}
+            else:
+                collection_ref = db.collection(u'user').document(user_info['user_id'])
+                user = doc_ref.get().to_dict()
+                doc_ref = collection_ref.document(user_info['user_id']).collection(u'recommend').document(user['prev_recommend'])
+                doc_item = doc_ref.get().to_dict()
+                book_list=[]
+                book_list.append(aladin_search(doc_item['book1_title'])['item'][0])
+                book_list.append(aladin_search(doc_item['book2_title'])['item'][0])
+                book_list.append(aladin_search(doc_item['book3_title'])['item'][0])
+                return {"result": "success", "prev_recommend":book_list}
+    except Exception as e:
+        return {"result": "fail", "error": str(e)}
+    
+@app.get("/prevRecommend")
+def prevRecommend(token: Optional[str] = Header(None)):
+    '''다시 추천 찾는 페이지 확인하기 현재 추천시스템 알고리즘 개발중으로 더미데이터로 대체'''
+    try:
+        if token == "undefined":
+            return {"result": "fail"}
+        
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        
+        if user_info:
+            dummy = {
+                "title1":"어린 왕자",
+                "title2":"역행자",
+                "title3":"코스모스"
+            }
+
+            item1=aladin_search(dummy['title1'])
+            item2=aladin_search(dummy['title2'])
+            item3=aladin_search(dummy['title3'])
+            dummy_save = {
+                "book1_title":item1['item'][0]['title'],
+                "book2_title":item2['item'][0]['title'],
+                "book3_title":item3['item'][0]['title'],
+                "book1_image_url":item1['item'][0]['cover'],
+                "book2_image_url":item2['item'][0]['cover'],
+                "book3_image_url":item3['item'][0]['cover']
+            }
+            collection_ref = db.collection(u'user')
+            doc_ref = collection_ref.document(user_info['user_id']).collection(u'recommend').document()
+            doc_ref.set(dummy_save)
+            collection_ref.document(user_info['user_id']).update({"prev_recommend":doc_ref.id})
+            return {"result": "success", "book1":item1['item'][0],"book2":item2['item'][0],"book3":item3['item'][0]}
+    except Exception as e:
+        return {"result": "fail", "error": str(e)}
