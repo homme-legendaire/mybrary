@@ -364,6 +364,8 @@ def my_book(token: Optional[str] = Header(None)):
                 "content":book['content'],
                 "my_think":book['my_think']
             }
+        else:
+            return {"result": "fail"}
     except Exception as e:
         return {"result": "fail", "error": str(e)}
     # front 코드#
@@ -413,8 +415,10 @@ def my_book_list(token: Optional[str] = Header(None)):
         if user_info:
             collection_ref = db.collection(u'user')
             user_prev_recommend = collection_ref.document(user_info['user_id']).get().to_dict()['prev_recommend']
-            doc_ref = collection_ref.document(user_info['user_id']).collection(u'recommend').document(user_prev_recommend)
-
+            if user_prev_recommend == "":
+                return {"result": "empty"}
+            else:
+                doc_ref = collection_ref.document(user_info['user_id']).collection(u'recommend').document(user_prev_recommend)
             doc_list = doc_ref.get()
             if len(doc_list) == 0:
                 return {"result": "empty"}
@@ -426,6 +430,9 @@ def my_book_list(token: Optional[str] = Header(None)):
                 book_list.append(book['book3_image_url'])
                 
             return {"result": "success", "book_list": book_list}
+        else:
+            return {"result": "fail"}
+        
     except Exception as e:
         return {"result": "fail", "error": str(e)}
 
@@ -460,6 +467,8 @@ def create_item( data: diffusionItem, token: Optional[str] = Header(None)):
                 encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
             
             return {"status": "success", "image_data": encoded_string, "image_name": image_name,"book_id":doc_id}
+        else:
+            return {"status": "fail"}
     except Exception as e:
         print(e)
         return {"status": "fail"}
@@ -489,6 +498,9 @@ def saveBook(data:saveBook,token: Optional[str] = Header(None), book: Optional[s
                 "book_image_url": data.book_image_url
             })
             return {"result": "success"}
+        else:
+            return {"result": "fail"}
+        
     except Exception as e:
         return {"result": "fail", "error": str(e)}
 
@@ -507,6 +519,9 @@ def loadBook(token: Optional[str] = Header(None), book: Optional[str] = Header(N
             doc_ref = collection_ref.document(user_info['user_id']).collection(u'book').document(book)
             book = doc_ref.get().to_dict()
             return {"result": "success", "book": book}
+        else:
+            return {"result": "fail"}
+        
     except Exception as e:
         return {"result": "fail", "error": str(e)}
     
@@ -524,6 +539,9 @@ def deleteBook(token: Optional[str] = Header(None), book: Optional[str] = Header
             doc_ref = collection_ref.document(user_info['user_id']).collection(u'book').document(book)
             doc_ref.delete()
             return {"result": "success"}
+        else:
+            return {"result": "fail"}
+        
     except Exception as e:
         return {"result": "fail", "error": str(e)}
 
@@ -548,6 +566,8 @@ def myLibrary(token: Optional[str] = Header(None)):
                 book['encoding_image'] = encoded_string
                 book_list.append(book)
             return {"result": "success", "book_list": book_list}
+        else:
+            return {"result": "fail"}
     except Exception as e:
         return {"result": "fail", "error": str(e)}
 
@@ -570,6 +590,8 @@ def userInfo(token: Optional[str] = Header(None)):
             doc_ref = collection_ref.document(user_info['user_id'])
             user = doc_ref.get().to_dict()
             return {"result": "success", "user": user}
+        else:
+            return {"result": "fail"}
     except Exception as e:
         return {"result": "fail", "error": str(e)}
 
@@ -594,6 +616,8 @@ def userBook(token: Optional[str] = Header(None)):
                 book = doc.to_dict()
                 book_list.append(book)
             return {"result": "success", "book_list": book_list}
+        else:
+            return {"result": "fail"}
     except Exception as e:
         return {"result": "fail", "error": str(e)}
 
@@ -618,6 +642,8 @@ def findRecommend(token: Optional[str] = Header(None)):
                 book_list.append(aladin_search(doc_item['book2_title'])['item'][0])
                 book_list.append(aladin_search(doc_item['book3_title'])['item'][0])
                 return {"result": "success", "prev_recommend":book_list}
+        else:
+            return {"result": "fail"}
     except Exception as e:
         return {"result": "fail", "error": str(e)}
     
