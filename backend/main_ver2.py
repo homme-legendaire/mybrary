@@ -182,8 +182,14 @@ def signup(data:front_signup,token : Optional[str] = Header(None)):
                 "createdAt": datetime.now(tz=timezone(timedelta(hours=9))),
                 "email": data.email,
                 "name": data.name,
-                "phoneNumber": data.phoneNumber
+                "phoneNumber": data.phoneNumber,
+                "level":"천자문",
+                "nickname":"책만이",
+                "prev_recommend":"",
+                "record_book":0
             }
+
+            new_doc_ref.set(new_user)
             return {"result":"success","data":new_user}
         else:
             return {"result":"fail","reason":"login fail"}
