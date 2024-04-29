@@ -416,8 +416,10 @@ def my_book_list(token: Optional[str] = Header(None)):
         if user_info:
             collection_ref = db.collection(u'user')
             user_prev_recommend = collection_ref.document(user_info['user_id']).get().to_dict()['prev_recommend']
-            doc_ref = collection_ref.document(user_info['user_id']).collection(u'recommend').document(user_prev_recommend)
-
+            if user_prev_recommend == "":
+                return {"result": "empty"}
+            else:
+                doc_ref = collection_ref.document(user_info['user_id']).collection(u'recommend').document(user_prev_recommend)
             doc_list = doc_ref.get()
             if len(doc_list) == 0:
                 return {"result": "empty"}
