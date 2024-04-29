@@ -419,15 +419,11 @@ def my_book_list(token: Optional[str] = Header(None)):
                 return {"result": "empty"}
             else:
                 doc_ref = collection_ref.document(user_info['user_id']).collection(u'recommend').document(user_prev_recommend)
-            doc_list = doc_ref.get()
-            if len(doc_list) == 0:
-                return {"result": "empty"}
+            doc_list = doc_ref.get().to_dict()
             book_list = []
-            for doc in doc_list:
-                book = doc.to_dict()
-                book_list.append(book['book1_image_url'])
-                book_list.append(book['book2_image_url'])
-                book_list.append(book['book3_image_url'])
+            book_list.append(doc_list['book2_image_url'])
+            book_list.append(doc_list['book3_image_url'])
+            book_list.append(doc_list['book1_image_url'])
                 
             return {"result": "success", "book_list": book_list}
         else:
