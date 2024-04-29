@@ -5,20 +5,31 @@ import { Button, Rating } from "@mui/material";
 import Link from "next/link";
 import { useLayoutEffect, useState } from "react";
 import { parseCookies } from "nookies";
+import { useRecoilState } from "recoil";
+import {
+  recommendationListState,
+  recommendationState,
+} from "@/components/recoil/atom";
 
 export default function Main() {
+  const [bookMark, setBookMark] = useState({});
+  const [recommendation, setRecommendation] =
+    useRecoilState(recommendationState);
+  const [bestSeller, setBestSeller] = useState([]);
+  const [recommendationList, setRecommendationList] = useRecoilState(
+    recommendationListState
+  );
+
   useLayoutEffect(() => {
     // 나의 아카이빙 페치
     fetchMyLibrary();
     // 이전의 추천 책 페치
-    fetchRecommendation();
+    if (recommendation?.length === 0) {
+      fetchRecommendation();
+    }
     // 실시간 베스트 셀러 페치
     fetchBestSeller();
   }, []);
-
-  const [bookMark, setBookMark] = useState({});
-  const [recommendation, setRecommendation] = useState([]);
-  const [bestSeller, setBestSeller] = useState([]);
 
   const fetchMyLibrary = async () => {
     try {
@@ -57,6 +68,38 @@ export default function Main() {
       console.log("추천 픽", resJson);
       if (resJson.result === "success") {
         setRecommendation(resJson.book_list);
+        fetchRecommendationFull();
+      } else if (resJson.result === "empty") {
+      } else {
+        alert("서버에서 오류가 발생했습니다.");
+      }
+    } catch (err) {
+      alert(`에러가 발생했습니다. ${err}`);
+    }
+  };
+
+  const fetchRecommendationFull = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/prevRecommend`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+          },
+        }
+      );
+      const resJson = await res.json();
+      console.log("추천 페치", resJson);
+      if (resJson.result === "success") {
+        const tempBookList = resJson.books.map((book) => {
+          return {
+            ...book,
+            author: book.author.split("(")[0],
+          };
+        });
+        setRecommendationList(tempBookList);
       } else if (resJson.result === "empty") {
       } else {
         alert("서버에서 오류가 발생했습니다.");
@@ -201,7 +244,7 @@ export default function Main() {
                   className={styles.bestSeller}
                   key={book}
                   href={book?.link}
-                  targe="_blank"
+                  target="_blank"
                 >
                   <div className={styles.bestSellerCoverImgLink}>
                     <img

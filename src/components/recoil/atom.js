@@ -41,3 +41,8 @@ export const recommendationListState = atom({
   key: "recommendationListState",
   default: [],
 });
+
+export const recommendationState = atom({
+  key: "recommendationState",
+  default: [],
+});

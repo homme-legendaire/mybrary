@@ -3,17 +3,29 @@ import styles from "./page.module.css";
 import Navigation from "@/components/Navigation";
 import { Button } from "@mui/material";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { parseCookies } from "nookies";
-import { recommendationListState } from "@/components/recoil/atom";
+import {
+  recommendationListState,
+  recommendationState,
+} from "@/components/recoil/atom";
+import { useRecoilState } from "recoil";
 
 export default function Find() {
   const [searched, setSearched] = useState(false);
-  const [recommendationList, setRecommendationList] = useState(
+  const [recommendation, setRecommendation] =
+    useRecoilState(recommendationState);
+  const [recommendationList, setRecommendationList] = useRecoilState(
     recommendationListState
   );
   const [selectedBook, setSelectedBook] = useState({});
   const [findLoading, setFindLoading] = useState(false);
+
+  useLayoutEffect(() => {
+    if (recommendationList?.length > 0) {
+      setSearched(true);
+    }
+  }, []);
 
   const recommendationHandler = async () => {
     try {
@@ -121,6 +133,8 @@ export default function Find() {
                   onClick={() => {
                     setSearched(false);
                     setSelectedBook({});
+                    setRecommendation([]);
+                    setRecommendationList([]);
                   }}
                 >
                   다시하기

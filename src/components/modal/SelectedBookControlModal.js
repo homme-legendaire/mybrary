@@ -74,19 +74,18 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
             <div className={styles.bookDescription}>
               <span className={styles.partTitle}>책갈피</span>
               <div className={styles.bookMark}>
-                {/* {Object.keys(bookMark)?.map((bookMark, index) => ( */}
                 <div
                   className={styles.bookMark}
-                  onClick={() => bookMarkModalOpenHandler(index)}
+                  onClick={() => bookMarkModalOpenHandler()}
                 >
                   <img
+                    className={styles.bookMarkImg}
                     src={bookMark.img}
                     alt={bookMark.text}
                     width={78}
                     height={78}
                   />
                 </div>
-                {/* ))} */}
               </div>
             </div>
           </div>
