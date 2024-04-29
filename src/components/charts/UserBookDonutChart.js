@@ -12,7 +12,7 @@ import { userDataState } from "../recoil/atom";
 export default function UserBookDonutChart() {
   const userData = useRecoilValue(userDataState);
 
-  const [series, setSeries] = useState([]);
+  const [series, setSeries] = useState({});
 
   useEffect(() => {
     const genreList = userData?.bookList.map((book) => book.genre);
@@ -24,13 +24,23 @@ export default function UserBookDonutChart() {
     setSeries(genreCount);
   }, [userData]);
 
+  const options = {
+    chart: {
+      type: "donut",
+    },
+    legend: "none",
+    dataLabels: {
+      enabled: false,
+    },
+    labels: Object.keys(series),
+  };
+
   return (
     <div>
       <ReactApexChart
         options={options}
-        series={series}
+        series={Object.values(series)}
         type="donut"
-        height="500"
       />
     </div>
   );
