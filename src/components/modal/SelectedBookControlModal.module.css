@@ -15,6 +15,31 @@
   gap: 1rem;
 }
 
+.smallModal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 200px;
+  overflow: auto;
+  padding: 12px;
+  border-radius: 4px;
+
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.modalBtn {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+
 .modalHeader {
   display: flex;
   justify-content: space-between;
