@@ -68,7 +68,7 @@ export default function Main() {
       console.log("추천 픽", resJson);
       if (resJson.result === "success") {
         setRecommendation(resJson.book_list);
-        fetchRecommendationFull();
+        // fetchRecommendationFull();
       } else if (resJson.result === "empty") {
       } else {
         alert("서버에서 오류가 발생했습니다.");
@@ -81,7 +81,7 @@ export default function Main() {
   const fetchRecommendationFull = async () => {
     try {
       const res = await fetch(
-        `${process.env.PRODUCTION_SERVER_HOST}/prevRecommend`,
+        `${process.env.PRODUCTION_SERVER_HOST}/recommendPage`,
         {
           method: "GET",
           headers: {

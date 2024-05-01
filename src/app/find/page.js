@@ -170,13 +170,18 @@ export default function Find() {
       }
       setFindLoading(true);
       const res = await fetch(
-        `${process.env.PRODUCTION_SERVER_HOST}/prevRecommend`,
+        `${process.env.PRODUCTION_SERVER_HOST}/findRecommend`,
         {
-          method: "GET",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             token: parseCookies(null, "token").token,
           },
+          body: JSON.stringify({
+            user_genre: firstKeyword,
+            user_mood: secondKeyword,
+            user_interest: thirdKeyword,
+          }),
         }
       );
       const resJson = await res.json();

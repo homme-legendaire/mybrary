@@ -72,7 +72,7 @@ export default function Mybrary() {
   const loadBookList = async () => {
     try {
       const res = await fetch(
-        `${process.env.PRODUCTION_SERVER_HOST}/loadBook`,
+        `${process.env.PRODUCTION_SERVER_HOST}/myLibrary`,
         {
           method: "GET",
           headers: {
@@ -83,7 +83,8 @@ export default function Mybrary() {
       );
       const resJson = await res.json();
       if (resJson.result === "success") {
-        setSavedBookList(resJson.book);
+        console.log("나의 아카이빙", resJson.book_list);
+        setSavedBookList(resJson.book_list);
       } else {
         alert("책 리스트를 불러오는데 실패했습니다.");
       }
@@ -134,6 +135,7 @@ export default function Mybrary() {
 
   const selectedBookSaveHandler = async () => {
     try {
+      console.log("SELECTED", selectedBook);
       if (Object.keys(selectedBook).length === 0) {
         alert("책을 선택해주세요.");
         return;
@@ -151,11 +153,16 @@ export default function Mybrary() {
             token: parseCookies(null, "token").token,
           },
           body: JSON.stringify({
-            book_title: selectedBook.title,
-            // book_genre: ,
-            content: selectedBook.description,
-            my_think: "",
-            book_image_url: selectedBook.image,
+            title: selectedBook.title,
+            genre: selectedBook.genre,
+            link: selectedBook.link,
+            image_url: selectedBook.image,
+            author: selectedBook.author,
+            discount: selectedBook.discount,
+            publisher: selectedBook.publisher,
+            pubdate: selectedBook.pubdate,
+            isbn: selectedBook.isbn,
+            description: selectedBook.description,
           }),
         }
       );
@@ -311,7 +318,7 @@ export default function Mybrary() {
                 }}
                 onClick={selectedBookSaveHandler}
               >
-                저장
+                저장하기
               </Button>
             )}
           </div>

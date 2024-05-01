@@ -134,7 +134,7 @@ def AIchoice(user_genre,user_mood,user_interest):
         # breakpoint()
 
         #입력받은 키워드 문자열을 리스트로 변환
-        user_interest = [keyword.strip() for keyword in user_interest.split(',') if keyword.strip()]
+        # user_interest = [keyword.strip() for keyword in user_interest.split(',') if keyword.strip()]
 
         # 입력 정보 출력 (테스트용)
         print("사용자 정보:")
@@ -185,8 +185,12 @@ def AIchoice(user_genre,user_mood,user_interest):
         print("가장 유사도가 높은 책 추천:")
         return_item = []
         for rank, (Index, book_title, author,similarity) in enumerate(most_similarities[:15], 0):
-            return_item.append(book_title+"-"+author)
+            k=book_title
+            print(k)
+            return_item.append(k)
             print(f"순위 {rank+1}: {book_title}-{author}) (Similarity: {similarity:.2f}) (Index: {Index})")
+        print(return_item)
+        return return_item
     except:
         print(traceback.format_exc())
 
@@ -422,6 +426,7 @@ def my_book(token: Optional[str] = Header(None)):
                 return {"result": "empty"}
             random_num = random.randint(0, max_num - 1)
             book = doc_list[random_num].to_dict()
+            
             image_path = book['image_path']
             image_name = book['image_name']
             # 이미지 파일을 base64 인코딩하여 JSON과 함께 반환
@@ -528,7 +533,7 @@ def create_item( data: diffusionItem, token: Optional[str] = Header(None)):
             image_path = result
             image_name = result
             doc_ref = db.collection(u'user').document(user_info['user_id']).collection(u'book').document()
-            doc_ref.set({
+            doc_ref.update({
                 "image_path": image_path,
             })
             doc_id = doc_ref.id
@@ -543,13 +548,18 @@ def create_item( data: diffusionItem, token: Optional[str] = Header(None)):
         return {"status": "fail"}
 
 class saveBook(BaseModel):
-    book_title: str
-    book_genre: str
-    content: str
-    my_think: str
-    book_image_url: str
+    title: str
+    genre: str
+    link: str
+    image_url: str
+    author: str
+    discount: int
+    publisher: str
+    pubdate: str
+    isbn: str
+    description: str
 @app.post("/saveBook")
-def saveBook(data:saveBook,token: Optional[str] = Header(None), book: Optional[str] = Header(None)):
+def saveBook(data:saveBook,token: Optional[str] = Header(None)):
     '''책 정보를 저장하는 API book은 책의 ID를 diffusion 이미지 생성때 준 ID를 사용'''
     try:
         if token == "undefined":
@@ -558,18 +568,30 @@ def saveBook(data:saveBook,token: Optional[str] = Header(None), book: Optional[s
         user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
         if user_info:
             collection_ref = db.collection(u'user')
-            if book == "undefined":
-                doc_ref = collection_ref.document(user_info['user_id']).collection(u'book').document()
-            else:
-                doc_ref = collection_ref.document(user_info['user_id']).collection(u'book').document(book)
-            doc_ref.update({
-                "book_genre": data.book_genre,
-                "book_title": data.book_title,
-                "content": data.content,
-                "my_think": data.my_think,
-                "book_image_url": data.book_image_url
-            })
-
+            doc_ref = collection_ref.document(user_info['user_id']).collection(u'book').document()
+        #      title: item.title,
+        # link: item.link,
+        # image: item.cover, // Use 'cover' from your API response
+        # author: item.author,
+        # discount: item.priceSales, // Use 'priceSales' for discount if applicable
+        # publisher: item.publisher,
+        # pubdate: item.pubDate,
+        # isbn: item.isbn13 || item.isbn,
+        # description: item.description,
+        # genre: item.category,
+            save_data={
+                "title": data.title,
+                "link": data.link,
+                "image_url": data.image_url,
+                "author": data.author,
+                "discount": data.discount,
+                "publisher": data.publisher,
+                "pubdate": data.pubdate,
+                "isbn": data.isbn,
+                "description": data.description,
+                "genre": data.genre
+            }
+            doc_ref.set(save_data)
             return {"result": "success"}
         else:
             return {"result": "fail"}
@@ -634,9 +656,10 @@ def myLibrary(token: Optional[str] = Header(None)):
             for doc in doc_list:
                 book = doc.to_dict()
                 book['book_id'] = doc.id
-                with open(book['image_path'], "rb") as image_file:
-                    encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-                book['encoding_image'] = encoded_string
+                #key값 변경
+                # with open(book['image_path'], "rb") as image_file:
+                #     encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                # book['encoding_image'] = encoded_string
                 book_list.append(book)
             return {"result": "success", "book_list": book_list}
         else:
@@ -703,11 +726,11 @@ def findRecommend(token: Optional[str] = Header(None)):
         
         user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
         if user_info:
+            collection_ref = db.collection(u'user').document(user_info['user_id'])
+            user = doc_ref.get().to_dict()
             if user['prev_recommend'] == "":
                 return {"result": "empty"}
             else:
-                collection_ref = db.collection(u'user').document(user_info['user_id'])
-                user = doc_ref.get().to_dict()
                 doc_ref = collection_ref.document(user_info['user_id']).collection(u'recommend').document(user['prev_recommend'])
                 doc_item = doc_ref.get().to_dict()
                 book_list=[]
@@ -736,6 +759,7 @@ def findRecommend(data:recommendItem,token: Optional[str] = Header(None)):
         
         if user_info:
             result=AIchoice(data.user_genre,data.user_mood,data.user_interest)
+            breakpoint()
             item1=aladin_search(result[0])
             item2=aladin_search(result[1])
             item3=aladin_search(result[2])
