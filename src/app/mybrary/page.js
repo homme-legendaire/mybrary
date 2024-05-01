@@ -64,9 +64,7 @@ export default function Mybrary() {
   const [selectedBookForEdit, setSelectedBookForEdit] = useState({});
 
   useLayoutEffect(() => {
-    if (savedBookList?.length === 0) {
-      loadBookList();
-    }
+    loadBookList();
   }, []);
 
   const loadBookList = async () => {
@@ -156,7 +154,7 @@ export default function Mybrary() {
             title: selectedBook.title,
             genre: selectedBook.genre,
             link: selectedBook.link,
-            image_url: selectedBook.image,
+            image_url: selectedBook.image_url,
             author: selectedBook.author,
             discount: selectedBook.discount,
             publisher: selectedBook.publisher,
@@ -258,7 +256,7 @@ export default function Mybrary() {
                             }}
                           >
                             <img
-                              src={item.image}
+                              src={item.image_url}
                               alt={item.title}
                               width={60}
                               height={78}
@@ -285,7 +283,7 @@ export default function Mybrary() {
               >
                 <div className={styles.selectedBook}>
                   <img
-                    src={selectedBook.image}
+                    src={selectedBook.image_url}
                     alt={selectedBook.title}
                     width={60}
                     height={78}
@@ -357,7 +355,7 @@ export default function Mybrary() {
             >
               <img
                 className={styles.savedBookItemImg}
-                src={item.image}
+                src={item.image_url}
                 alt={item.title}
                 width={60}
                 height={78}

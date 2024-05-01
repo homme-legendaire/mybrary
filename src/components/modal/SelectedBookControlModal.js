@@ -110,7 +110,12 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
         <div className={styles.modal}>
           <div className={styles.modalHeader}>
             <div className={styles.bookInfo}>
-              <img src={book.image} alt={book.title} width={60} height={78} />
+              <img
+                src={book.image_url}
+                alt={book.title}
+                width={60}
+                height={78}
+              />
               <div className={styles.bookTitle}>
                 <span className={styles.title}>
                   {book.title?.length > 15

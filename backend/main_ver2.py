@@ -426,7 +426,7 @@ def my_book(token: Optional[str] = Header(None)):
                 return {"result": "empty"}
             random_num = random.randint(0, max_num - 1)
             book = doc_list[random_num].to_dict()
-            
+            print(book)
             image_path = book['image_path']
             image_name = book['image_name']
             # 이미지 파일을 base64 인코딩하여 JSON과 함께 반환
@@ -437,8 +437,9 @@ def my_book(token: Optional[str] = Header(None)):
                 "result": "success",
                 "image_data": encoded_string,
                 "image_name": image_name,
-                "content":book['content'],
-                "my_think":book['my_think']
+                "memo":book['memo'],
+                "title":book['title'],
+                "createdAt":book['createdAt'].strftime("%Y-%m-%d %H:%M")
             }
         else:
             return {"result": "fail"}
@@ -535,6 +536,9 @@ def create_item( data: diffusionItem, token: Optional[str] = Header(None)):
             doc_ref = db.collection(u'user').document(user_info['user_id']).collection(u'book').document()
             doc_ref.update({
                 "image_path": image_path,
+                "image_name": image_name,
+                "memo":data.prompt,
+                "my_think":data.prompt,
             })
             doc_id = doc_ref.id
             with open(image_path, "rb") as image_file:
@@ -589,10 +593,11 @@ def saveBook(data:saveBook,token: Optional[str] = Header(None)):
                 "pubdate": data.pubdate,
                 "isbn": data.isbn,
                 "description": data.description,
-                "genre": data.genre
+                "genre": data.genre,
+                "createdAt": datetime.now(tz=timezone(timedelta(hours=9))),
             }
             doc_ref.set(save_data)
-            return {"result": "success"}
+            return {"result": "success", "book_id": doc_ref.id}
         else:
             return {"result": "fail"}
         
@@ -685,7 +690,13 @@ def userInfo(token: Optional[str] = Header(None)):
             collection_ref = db.collection(u'user')
             doc_ref = collection_ref.document(user_info['user_id'])
             user = doc_ref.get().to_dict()
-            return {"result": "success", "user": user}
+            docs_ref = collection_ref.document(user_info['user_id']).collection(u'book')
+            doc_list = docs_ref.get()
+            book_list = []
+            for doc in doc_list:
+                book = doc.to_dict()
+                book_list.append(book)
+            return {"result": "success", "user": user, "book_list": book_list}
         else:
             return {"result": "fail"}
     except Exception as e:
@@ -694,7 +705,7 @@ def userInfo(token: Optional[str] = Header(None)):
 
 
 
-## 유저 정보의 책들을 가져오는 API
+## 유저 정보의 책들을 가져오는 API 폐지
 @app.get("/userBook")
 def userBook(token: Optional[str] = Header(None)):
     '''유저 정보의 책들을 가져오는 API'''
@@ -759,7 +770,6 @@ def findRecommend(data:recommendItem,token: Optional[str] = Header(None)):
         
         if user_info:
             result=AIchoice(data.user_genre,data.user_mood,data.user_interest)
-            breakpoint()
             item1=aladin_search(result[0])
             item2=aladin_search(result[1])
             item3=aladin_search(result[2])

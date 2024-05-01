@@ -12,6 +12,7 @@ import {
 } from "@/components/recoil/atom";
 
 export default function Main() {
+  const [imageData, setImageData] = useState("");
   const [bookMark, setBookMark] = useState({});
   const [recommendation, setRecommendation] =
     useRecoilState(recommendationState);
@@ -43,6 +44,8 @@ export default function Main() {
       const resJson = await res.json();
       console.log("나의 아카이빙", resJson);
       if (resJson.result === "success") {
+        setImageData("data:image/jpeg;base64," + resJson.image_data);
+        setBookMark(resJson);
       } else if (resJson.result === "empty") {
       } else {
         alert("서버에서 오류가 발생했습니다.");
@@ -145,18 +148,11 @@ export default function Main() {
         <span className={styles.headTitle}>나의 아카이빙</span>
         {Object.keys(bookMark).length > 0 ? (
           <div className={styles.mybraryContent}>
-            <img
-              className={styles.bookMarkImg}
-              src={"./rose.png"}
-              alt="북마크"
-            />
+            <img className={styles.bookMarkImg} src={imageData} alt="북마크" />
             <div className={styles.mybraryText}>
-              <div className={styles.mybraryTitle}>어린 왕자</div>
-              <div className={styles.mybraryDescription}>
-                "네 장미꽃을 소중하게 만든 것은 그 꽃을 위해 네가 소비한
-                시간이란다"
-              </div>
-              <div className={styles.mybraryDate}>2024.03.30</div>
+              <div className={styles.mybraryTitle}>{bookMark.title}</div>
+              <div className={styles.mybraryDescription}>{bookMark.memo}</div>
+              <div className={styles.mybraryDate}>{bookMark.createdAt}</div>
             </div>
           </div>
         ) : (
