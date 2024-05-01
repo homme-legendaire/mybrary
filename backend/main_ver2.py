@@ -45,8 +45,6 @@ logging.basicConfig(
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://dev.coupilot.net",
-    "https://www.coupilot.net",
     "https://localhost:3000",
     "http://localhost",
     "https://localhost",
@@ -331,7 +329,10 @@ class aladin_searchItem(BaseModel):
 @app.post("/aladin/search")
 def aladinSearch(data: aladin_searchItem):
     '''알라딘 검색 API 메인페이지용'''
-    return aladin_search(data.Query)
+    ad=aladin_search(data.Query)
+    print(ad)
+    return ad
+
 
 
 @app.get("/my_book")
@@ -446,11 +447,13 @@ def create_item( data: diffusionItem, token: Optional[str] = Header(None)):
             return {"status": "fail"}
         user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
         if user_info:
-            translated = translator.translate(data.prompt, dest='en').text  # 한글 문장을 영어로 번역
+            translated = translator.translate(data.prompt).text
             translated= '\"' + translated + ' \"'
             # 번역된 문장 이미지 생성에 알맞는 Prompt로 변경
-            response = model.generate_content("Change the next sentence"+data.prompt+"for prompt English sentence suitable for image creation.")
-            result=diffusion(response)
+            response = model.generate_content("Change the next sentence"+translated+"for prompt English sentence suitable for image creation.")
+            print(response.text)
+            result=diffusion(response.text)
+            print(result)
             # return templates.TemplateResponse('index.html', {'request': request, 'user': data.prompt})
             image_path = result
             image_name = result
