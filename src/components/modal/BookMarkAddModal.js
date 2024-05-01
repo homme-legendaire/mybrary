@@ -3,7 +3,7 @@ import styles from "./BookMarkAddModal.module.css";
 import { useEffect, useState } from "react";
 import { bookMarkState } from "../recoil/atom";
 import { useRecoilState } from "recoil";
-
+import { parseCookies } from "nookies";
 export default function BookMarkAddModal({ open, onClose }) {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState("/rose.png");
@@ -19,6 +19,7 @@ export default function BookMarkAddModal({ open, onClose }) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
           },
           body: JSON.stringify({
             prompt: prompt,
