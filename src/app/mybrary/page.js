@@ -10,11 +10,13 @@ import {
 } from "@mui/material";
 import styles from "./page.module.css";
 import Navigation from "@/components/Navigation";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Add, Search } from "@mui/icons-material";
 import { useRecoilState } from "recoil";
 import { savedBookListState } from "@/components/recoil/atom";
 import SelectedBookControlModal from "@/components/modal/SelectedBookControlModal";
+import { CircleLoader } from "react-spinners";
+import { parseCookies } from "nookies";
 
 export default function Mybrary() {
   const [sortedBy, setSortedBy] = useState("최신순");
@@ -53,6 +55,7 @@ export default function Mybrary() {
   //   "어린이(초등)",
   //   "만화",
   // ];
+  const [bookSearchLoading, setBookSearchLoading] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
   const [selectedBook, setSelectedBook] = useState({});
 
@@ -60,11 +63,39 @@ export default function Mybrary() {
   const [selectedBookModalOpen, setSelectedBookModalOpen] = useState(false);
   const [selectedBookForEdit, setSelectedBookForEdit] = useState({});
 
+  useLayoutEffect(() => {
+    if (savedBookList?.length === 0) {
+      loadBookList();
+    }
+  }, []);
+
+  const loadBookList = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/loadBook`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+          },
+        }
+      );
+      const resJson = await res.json();
+      if (resJson.result === "success") {
+        setSavedBookList(resJson.book);
+      } else {
+        alert("책 리스트를 불러오는데 실패했습니다.");
+      }
+    } catch {
+      alert("책 리스트를 불러오는데 실패했습니다.");
+    }
+  };
+
   const bookTitleSearchHandler = async () => {
-    setSelectedBook({});
-    if (searchResult.length > 0) {
-      setSearchResult([]);
-    } else {
+    try {
+      setBookSearchLoading(true);
+      setSelectedBook({});
       const res = await fetch(
         `${process.env.PRODUCTION_SERVER_HOST}/aladin/search`,
         {
@@ -91,19 +122,51 @@ export default function Mybrary() {
       }));
       console.log("검색 결과", simplifiedResults);
       setSearchResult(simplifiedResults);
+      setBookSearchLoading(false);
+    } catch (error) {
+      alert(error);
     }
   };
 
-  console.log("SAVED", savedBookList);
+  console.log("SELECT", selectedBook);
 
   const selectedBookSaveHandler = async () => {
-    if (Object.keys(selectedBook).length === 0) {
-      return;
+    try {
+      if (Object.keys(selectedBook).length === 0) {
+        alert("책을 선택해주세요.");
+        return;
+      }
+      if (savedBookList?.some((item) => item.isbn === selectedBook.isbn)) {
+        alert("이미 저장된 책입니다.");
+        return;
+      }
+      const res = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/saveBook`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+          },
+          body: JSON.stringify({
+            book_title: selectedBook.title,
+            // book_genre: ,
+            content: selectedBook.description,
+            my_think: "",
+            book_image_url: selectedBook.image,
+          }),
+        }
+      );
+      const resJson = await res.json();
+      if (resJson.result === "success") {
+        setSavedBookList([...savedBookList, selectedBook]);
+        setAddBookModalOpen(false);
+      } else {
+        alert("책 저장에 실패했습니다.");
+      }
+    } catch (err) {
+      alert(err);
     }
-    if (!savedBookList?.some((item) => item.isbn === selectedBook.isbn)) {
-      setSavedBookList([...savedBookList, selectedBook]);
-    }
-    setAddBookModalOpen(false);
   };
 
   const bookSelectHandler = (key) => {
@@ -128,6 +191,7 @@ export default function Mybrary() {
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                onSubmit={bookTitleSearchHandler}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton onClick={bookTitleSearchHandler} edge="end">
@@ -161,7 +225,12 @@ export default function Mybrary() {
                 })}
               </Select>
             </div> */}
-            {Object.keys(selectedBook).length === 0 ? (
+            {bookSearchLoading ? (
+              <div className={styles.searchResultLoading}>
+                <CircleLoader color="#7c3f34" loading size={100} />
+                <span>잠시만 기다려주세요..</span>
+              </div>
+            ) : Object.keys(selectedBook).length === 0 ? (
               <div className={styles.searchResultContainer}>
                 <div className={styles.searchResult}>
                   {searchResult?.length === 0 ? (
@@ -201,7 +270,10 @@ export default function Mybrary() {
                 </div>
               </div>
             ) : (
-              <div className={styles.selectedBookContainer}>
+              <div
+                className={styles.selectedBookContainer}
+                onClick={() => setSelectedBook({})}
+              >
                 <div className={styles.selectedBook}>
                   <img
                     src={selectedBook.image}

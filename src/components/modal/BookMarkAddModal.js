@@ -9,7 +9,7 @@ export default function BookMarkAddModal({ open, onClose }) {
   const [imageUrl, setImageUrl] = useState("/rose.png");
   const [memo, setMemo] = useState("");
 
-  const [bookMarkList, setBookMarkList] = useRecoilState(bookMarkState);
+  const [bookMark, setBookMark] = useRecoilState(bookMarkState);
 
   const addHandler = async () => {
     try {
@@ -42,7 +42,7 @@ export default function BookMarkAddModal({ open, onClose }) {
 
   const saveHandler = async () => {
     try {
-      setBookMarkList({
+      setBookMark({
         text: prompt,
         img: imageUrl,
         memo: "시간을 들여야 하는 것이 중요하다는 것을 알게 되었다",

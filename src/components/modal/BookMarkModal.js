@@ -29,8 +29,6 @@ export default function BookMarkModal({ open, onClose }) {
     e.stopPropagation();
   };
 
-  console.log("bookMark", bookMark);
-
   return (
     <Modal open={open} onClose={onClose} disableAutoFocus>
       <div className={styles.modal}>

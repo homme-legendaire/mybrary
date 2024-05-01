@@ -52,6 +52,15 @@
   overflow: auto;
 }
 
+.searchResultLoading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+}
+
 .searchResult {
   background-color: #f5f3f3;
 }
