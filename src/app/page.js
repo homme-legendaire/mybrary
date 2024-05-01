@@ -153,6 +153,7 @@ export default function Login() {
               ...tempUserData,
               ...resJson.user,
             };
+            setUserData(tempUserData);
           } else {
             setSnackBarOpen(true);
             setSnackBarStatus("error");

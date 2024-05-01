@@ -16,6 +16,7 @@ export default function UserBookDonutChart() {
 
   useEffect(() => {
     const genreList = userData?.bookList?.map((book) => book.genre);
+    if (genreList === undefined) return;
     const genreCount = genreList.reduce((acc, cur) => {
       acc[cur] = (acc[cur] || 0) + 1;
       return acc;

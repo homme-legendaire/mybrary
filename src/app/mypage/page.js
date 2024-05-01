@@ -20,6 +20,8 @@ export default function Find() {
 
     console.log("GENRE", genreCount);
 
+    if (genreCount === undefined) return "";
+
     if (Object.keys(genreCount)?.length > 0) {
       const maxGenre = Object.keys(genreCount)?.reduce((a, b) =>
         genreCount[a] > genreCount[b] ? a : b
@@ -41,6 +43,7 @@ export default function Find() {
 
   const genreChartPercentageLabel = () => {
     const genreList = genreChartLabel();
+    if (genreList === undefined) return [];
     if (Object.values(genreList)?.length === 0) return [];
     const genreTotal = Object.values(genreList)?.reduce((a, b) => a + b);
     const genreKey = Object.keys(genreList);
@@ -80,7 +83,9 @@ export default function Find() {
           </div>
           <div className={styles.infoContainer}>
             <span>가입일</span>
-            <span className={styles.infoLabel}>{userData?.createdAt}</span>
+            <span className={styles.infoLabel}>
+              {userData?.createdAt?.split("T")[0]}
+            </span>
           </div>
         </div>
       </div>
@@ -95,20 +100,31 @@ export default function Find() {
         </div>
       </div>
       <div className={styles.genreInfo}>
-        <span>나의 장르</span>
-        <div className={styles.genreChartContainer}>
-          <div className={styles.genreChart}>
-            <UserBookDonutChart />
-          </div>
-          <div className={styles.genreChartLabel}>
-            {genreChartPercentageLabel()?.map((genre) => (
-              <div className={styles.genreChartLabelContainer} key={genre}>
-                <span>{Object.keys(genre)[0]}</span>
-                <span>{Math.round(Object.values(genre)[0])}%</span>
+        {userData?.bookList?.length > 0 ? (
+          <>
+            <span>나의 장르</span>
+            <div className={styles.genreChartContainer}>
+              <div className={styles.genreChart}>
+                <UserBookDonutChart />
               </div>
-            ))}
-          </div>
-        </div>
+              <div className={styles.genreChartLabel}>
+                {genreChartPercentageLabel()?.map((genre) => (
+                  <div className={styles.genreChartLabelContainer} key={genre}>
+                    <span>{Object.keys(genre)[0]}</span>
+                    <span>{Math.round(Object.values(genre)[0])}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <span>나의 장르</span>
+            <div className={styles.voidContainer}>
+              <span>등록된 도서가 없습니다.</span>
+            </div>
+          </>
+        )}
       </div>
       <Button
         fullWidth
