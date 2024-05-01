@@ -34,7 +34,16 @@ from firebase_admin import credentials
 from fastapi.responses import FileResponse
 import google.generativeai as genai
 import base64
+import pandas as pd
+from gensim.models import Word2Vec # pip install gensim,pip install scipy==1.10.1
+import numpy as np
+
 app = FastAPI()
+
+
+
+
+
 
 logging.basicConfig(
     filename="app.log",  # 로그 파일의 경로 및 이름 설정
@@ -119,7 +128,67 @@ def diffusion(prompt):
     print(f"Execution time -- {original_sd} ms\n")
     return f'tmp{count}.jpg'
 
+def AIchoice(user_genre,user_mood,user_interest):
+# 장르, 분위기, 흥미 정보 입력 (예시)
+    try:
+        # breakpoint()
 
+        #입력받은 키워드 문자열을 리스트로 변환
+        user_interest = [keyword.strip() for keyword in user_interest.split(',') if keyword.strip()]
+
+        # 입력 정보 출력 (테스트용)
+        print("사용자 정보:")
+        print(" - 책 장르:", user_genre)
+        print(" - 기분:", user_mood)
+        print(" - 관심 키워드:", user_interest)
+        print("\n")
+        # Word2Vec 모델 로드 (필요에 따라 모델 학습)
+
+        # pkl 파일로부터 모델 불러오기
+        model_path = "book_word2vec_modelEssay.pkl"
+        book_word2vec_model = Word2Vec.load(model_path)
+
+        # pkl 책 데이터(벡터) 불러오기
+        with open('book_vector_essay.pkl', 'rb') as f:
+            book_vectors = pd.read_pickle(f)
+
+        print(book_vectors.head())
+        # 사용자 입력 정보를 벡터로 변환
+        user_vector =(0.1*book_word2vec_model.wv[user_genre])+ (0.1*book_word2vec_model.wv[user_mood]) +(0.8*np.mean(book_word2vec_model.wv[user_interest],axis=0))
+
+        #np.mean([book_word2vec_model.wv[word] for word in [user_genre, user_mood, user_interest] if word in book_word2vec_model.wv.key_to_index], axis=0)
+
+        # 책 벡터와 사용자 입력 벡터 간의 유사도 계산
+        similarities = []
+        most_similarities = []
+        for i in range(len(book_vectors)):
+            vector = book_vectors.iloc[i,1]
+            Index = book_vectors.iloc[i,2]
+            title = book_vectors.iloc[i,0]
+            author = book_vectors.iloc[i,-1]
+            if len(vector) != 0:
+                similarity = np.dot(vector, user_vector) / (np.linalg.norm(vector) * np.linalg.norm(user_vector))
+
+            else :
+                similarity = 0
+        #similarities.append((i,title ,similarity))
+
+            if similarity >= 0.8:
+                    similarities.append((Index, title,author, similarity))
+        most_similarities = similarities.copy()
+        most_similarities.sort(reverse=True, key=lambda x: x[-1])
+        #print("유저가 선택한 '분위기': {}, '흥미': {}".format(user_mood, user_interest))
+        print("유사도가 0.8 이상인 추천 책:")
+        for rank, (Index, book_title, author,similarity) in enumerate(similarities[:15], 0):
+            print(f"순위 {rank+1}: {book_title}-{author} (Similarity: {similarity:.2f}) (Index: {Index})")
+        print("\n")
+        print("가장 유사도가 높은 책 추천:")
+        return_item = []
+        for rank, (Index, book_title, author,similarity) in enumerate(most_similarities[:15], 0):
+            return_item.append(book_title+"-"+author)
+            print(f"순위 {rank+1}: {book_title}-{author}) (Similarity: {similarity:.2f}) (Index: {Index})")
+    except:
+        print(traceback.format_exc())
 
 # @app.post('/')  # POST 메소드 라우트
 # async def receive_text(user: str = Form(...)):  # 폼 데이터를 user 변수로 받음
@@ -291,7 +360,7 @@ def aladin_search(Query):
     params ={
         'ttbkey' : ALADINAPI,
         "Query":Query,
-        'QueryType' : 'ItemNewAll',
+        'QueryType' : 'Keyword',
         'MaxResults' : 10,
         'SearchTarget' : 'Book',
         'output' : 'js',
@@ -646,8 +715,13 @@ def findRecommend(token: Optional[str] = Header(None)):
     except Exception as e:
         return {"result": "fail", "error": str(e)}
     
-@app.get("/prevRecommend")
-def prevRecommend(token: Optional[str] = Header(None)):
+class recommendItem(BaseModel):
+    user_genre: str
+    user_mood: str
+    user_interest: str
+
+@app.post("/findRecommend")
+def findRecommend(data:recommendItem,token: Optional[str] = Header(None)):
     '''다시 추천 찾는 페이지 확인하기 현재 추천시스템 알고리즘 개발중으로 더미데이터로 대체'''
     try:
         if token == "undefined":
@@ -656,15 +730,10 @@ def prevRecommend(token: Optional[str] = Header(None)):
         user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
         
         if user_info:
-            dummy = {
-                "title1":"어린 왕자",
-                "title2":"역행자",
-                "title3":"코스모스"
-            }
-
-            item1=aladin_search(dummy['title1'])
-            item2=aladin_search(dummy['title2'])
-            item3=aladin_search(dummy['title3'])
+            result=AIchoice(data.user_genre,data.user_mood,data.user_interest)
+            item1=aladin_search(result[0])
+            item2=aladin_search(result[1])
+            item3=aladin_search(result[2])
             dummy_save = {
                 "book1_title":item1['item'][0]['title'],
                 "book2_title":item2['item'][0]['title'],
