@@ -557,7 +557,10 @@ def saveBook(data:saveBook,token: Optional[str] = Header(None), book: Optional[s
         user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
         if user_info:
             collection_ref = db.collection(u'user')
-            doc_ref = collection_ref.document(user_info['user_id']).collection(u'book').document(book)
+            if book == "undefined":
+                doc_ref = collection_ref.document(user_info['user_id']).collection(u'book').document()
+            else:
+                doc_ref = collection_ref.document(user_info['user_id']).collection(u'book').document(book)
             doc_ref.update({
                 "book_genre": data.book_genre,
                 "book_title": data.book_title,
@@ -565,6 +568,7 @@ def saveBook(data:saveBook,token: Optional[str] = Header(None), book: Optional[s
                 "my_think": data.my_think,
                 "book_image_url": data.book_image_url
             })
+
             return {"result": "success"}
         else:
             return {"result": "fail"}
