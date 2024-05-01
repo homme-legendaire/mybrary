@@ -674,6 +674,6 @@ def prevRecommend(token: Optional[str] = Header(None)):
             doc_ref = collection_ref.document(user_info['user_id']).collection(u'recommend').document()
             doc_ref.set(dummy_save)
             collection_ref.document(user_info['user_id']).update({"prev_recommend":doc_ref.id})
-            return {"result": "success", "book1":item1['item'][0],"book2":item2['item'][0],"book3":item3['item'][0]}
+            return {"result": "success", "books": [item1['item'][0],item2['item'][0],item3['item'][0]]}
     except Exception as e:
         return {"result": "fail", "error": str(e)}
