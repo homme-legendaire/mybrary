@@ -119,7 +119,9 @@ export default function Mybrary() {
         pubdate: item.pubDate,
         isbn: item.isbn13 || item.isbn,
         description: item.description,
+        genre: item.category,
       }));
+
       console.log("검색 결과", simplifiedResults);
       setSearchResult(simplifiedResults);
       setBookSearchLoading(false);

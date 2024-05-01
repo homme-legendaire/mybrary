@@ -399,7 +399,8 @@ class aladin_searchItem(BaseModel):
 def aladinSearch(data: aladin_searchItem):
     '''알라딘 검색 API 메인페이지용'''
     ad=aladin_search(data.Query)
-    print(ad)
+    for item in ad['item']:
+        item['category'] = item['categoryName'].split('>')[1]
     return ad
 
 
