@@ -275,12 +275,12 @@ def login(token: Optional[str] = Header(None)):
     try:
         id_token=token
         session_cookie = auth.create_session_cookie(id_token, expires_in=5*24*60*60)
-        # 반환 헤더에 csrf_token를 추가한다.
+        
         return {"session_cookie":session_cookie}
     except:
         logging.error(f" 실패 login,{datetime.now()} {traceback.format_exc()}")
         return {"result":"fail"}
-@app.get('/login/passwordReset') ## 일단은 만드는데 추후 보안 관련해서 생각해봐야할듯
+@app.get('/login/passwordReset') 
 def can_reset_password(email: Optional[str] = Header(None),phoneNumber: Optional[str] = Header(None)):
     try:
         if email is None or email =="undefined":
@@ -288,7 +288,6 @@ def can_reset_password(email: Optional[str] = Header(None),phoneNumber: Optional
         elif phoneNumber is None or phoneNumber =="undefined":
             return {"result":"fail"}
         else:
-            #차후에 이메일로 비밀번호 재설정 링크를 보내줘야함
             collection_ref=db.collection(u'user')
             query_ref = collection_ref.where(filter=FieldFilter("email","==",email)).where(filter=FieldFilter("phoneNumber","==",phoneNumber)).get()
             if len(query_ref)==1:
@@ -421,11 +420,16 @@ def my_book(token: Optional[str] = Header(None)):
             collection_ref = db.collection(u'user')
             doc_ref = collection_ref.document(user_info['user_id']).collection(u'book')
             doc_list = doc_ref.get()
-            max_num = len(doc_list)
+            saved_book = []
+            for doc in doc_list:
+                dc=doc.to_dict()
+                if "image_path" in dc:
+                    saved_book.append(dc)
+            max_num = len(saved_book)
             if max_num == 0:
                 return {"result": "empty"}
             random_num = random.randint(0, max_num - 1)
-            book = doc_list[random_num].to_dict()
+            book = saved_book[random_num].to_dict()
             print(book)
             image_path = book['image_path']
             image_name = book['image_name']
@@ -696,6 +700,8 @@ def userInfo(token: Optional[str] = Header(None)):
             for doc in doc_list:
                 book = doc.to_dict()
                 book_list.append(book)
+            
+            
             return {"result": "success", "user": user, "book_list": book_list}
         else:
             return {"result": "fail"}
