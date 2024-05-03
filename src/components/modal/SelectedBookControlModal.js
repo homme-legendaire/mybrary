@@ -5,7 +5,7 @@ import { useState } from "react";
 import BookMarkModal from "./BookMarkModal";
 import BookMarkAddModal from "./BookMarkAddModal";
 import { useRecoilState } from "recoil";
-import { bookMarkState, savedBookListState } from "../recoil/atom";
+import { bookMarkState, userBookListState } from "../recoil/atom";
 import { parseCookies } from "nookies";
 
 export default function SelectedBookControlModal({ open, onClose, book }) {
@@ -23,7 +23,7 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
 
   // 책 삭제 모달 변수
   const [bookDeleteModalOpen, setBookDeleteModalOpen] = useState(false);
-  const [savedBookList, setSavedBookList] = useRecoilState(savedBookListState);
+  const [savedBookList, setSavedBookList] = useRecoilState(userBookListState);
 
   const bookMarkModalOpenHandler = (key) => {
     setBookMarkModalOpen(true);
@@ -44,10 +44,13 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
       );
       const resJson = await res.json();
       if (resJson.result === "success") {
+        setBookMarkAddModalOpen(false);
+        setBookMarkModalOpen(false);
         setBookDeleteModalOpen(false);
         setSavedBookList(
           savedBookList.filter((item) => item.title !== book.title)
         );
+        onClose();
       } else {
         alert("서버에서 오류가 발생했습니다.");
       }
@@ -110,12 +113,7 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
         <div className={styles.modal}>
           <div className={styles.modalHeader}>
             <div className={styles.bookInfo}>
-              <img
-                src={book.image_url}
-                alt={book.title}
-                width={60}
-                height={78}
-              />
+              <img src={book.image} alt={book.title} width={60} height={78} />
               <div className={styles.bookTitle}>
                 <span className={styles.title}>
                   {book.title?.length > 15
@@ -157,18 +155,22 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
             <div className={styles.bookDescription}>
               <span className={styles.partTitle}>책갈피</span>
               <div className={styles.bookMark}>
-                <div
-                  className={styles.bookMark}
-                  onClick={() => bookMarkModalOpenHandler()}
-                >
-                  <img
-                    className={styles.bookMarkImg}
-                    src={bookMark.img}
-                    alt={bookMark.text}
-                    width={78}
-                    height={78}
-                  />
-                </div>
+                {Object.keys(bookMark).length === 0 ? (
+                  <>책갈피를 제작해 보세요!</>
+                ) : (
+                  <div
+                    className={styles.bookMark}
+                    onClick={() => bookMarkModalOpenHandler()}
+                  >
+                    <img
+                      className={styles.bookMarkImg}
+                      src={bookMark.img}
+                      alt={bookMark.text}
+                      width={78}
+                      height={78}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>

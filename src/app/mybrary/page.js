@@ -13,7 +13,7 @@ import Navigation from "@/components/Navigation";
 import { useLayoutEffect, useState } from "react";
 import { Add, Search } from "@mui/icons-material";
 import { useRecoilState } from "recoil";
-import { savedBookListState } from "@/components/recoil/atom";
+import { userBookListState } from "@/components/recoil/atom";
 import SelectedBookControlModal from "@/components/modal/SelectedBookControlModal";
 import { CircleLoader } from "react-spinners";
 import { parseCookies } from "nookies";
@@ -24,7 +24,7 @@ export default function Mybrary() {
   const [addBookModalOpen, setAddBookModalOpen] = useState(false);
 
   // 저장된 책 리스트
-  const [savedBookList, setSavedBookList] = useRecoilState(savedBookListState);
+  const [savedBookList, setSavedBookList] = useRecoilState(userBookListState);
 
   // 책 추가 모달 파트 변수
   const [title, setTitle] = useState("");
@@ -81,7 +81,7 @@ export default function Mybrary() {
       );
       const resJson = await res.json();
       if (resJson.result === "success") {
-        console.log("나의 아카이빙", resJson.book_list);
+        console.log("나의 아카이빙", resJson);
         setSavedBookList(resJson.book_list);
       } else {
         alert("책 리스트를 불러오는데 실패했습니다.");
@@ -108,6 +108,7 @@ export default function Mybrary() {
         }
       );
       const resJson = await res.json();
+      console.log("찐 결과", resJson);
       const simplifiedResults = resJson.item.map((item) => ({
         title: item.title,
         link: item.link,
@@ -154,7 +155,7 @@ export default function Mybrary() {
             title: selectedBook.title,
             genre: selectedBook.genre,
             link: selectedBook.link,
-            image_url: selectedBook.image_url,
+            image: selectedBook.image,
             author: selectedBook.author,
             discount: selectedBook.discount,
             publisher: selectedBook.publisher,
@@ -256,7 +257,7 @@ export default function Mybrary() {
                             }}
                           >
                             <img
-                              src={item.image_url}
+                              src={item.image}
                               alt={item.title}
                               width={60}
                               height={78}
@@ -283,7 +284,7 @@ export default function Mybrary() {
               >
                 <div className={styles.selectedBook}>
                   <img
-                    src={selectedBook.image_url}
+                    src={selectedBook.image}
                     alt={selectedBook.title}
                     width={60}
                     height={78}
@@ -355,7 +356,7 @@ export default function Mybrary() {
             >
               <img
                 className={styles.savedBookItemImg}
-                src={item.image_url}
+                src={item.image}
                 alt={item.title}
                 width={60}
                 height={78}
