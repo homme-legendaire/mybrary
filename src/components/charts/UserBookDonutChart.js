@@ -7,15 +7,16 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 import { useRecoilValue } from "recoil";
-import { userDataState } from "../recoil/atom";
+import { userBookListState, userDataState } from "../recoil/atom";
 
 export default function UserBookDonutChart() {
   const userData = useRecoilValue(userDataState);
+  const bookList = useRecoilValue(userBookListState);
 
   const [series, setSeries] = useState({});
 
   useEffect(() => {
-    const genreList = userData?.bookList?.map((book) => book.genre);
+    const genreList = bookList?.map((book) => book.genre);
     if (genreList === undefined) return;
     const genreCount = genreList.reduce((acc, cur) => {
       acc[cur] = (acc[cur] || 0) + 1;

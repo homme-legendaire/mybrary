@@ -23,7 +23,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRecoilState } from "recoil";
 import { setCookie, parseCookies, destroyCookie } from "nookies";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { userDataState } from "@/components/recoil/atom.js";
+import { userBookListState, userDataState } from "@/components/recoil/atom.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
 import Fernet from "fernet";
@@ -36,6 +36,7 @@ export default function Login() {
   const [passwordWarning, setPasswordWarning] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [userData, setUserData] = useRecoilState(userDataState);
+  const [bookList, setBookList] = useRecoilState(userBookListState);
   const router = useRouter();
   const [loginLoading, setloginLoading] = useState(false);
   // const [couponList, setCouponList] = useRecoilState(couponListState);
@@ -154,6 +155,7 @@ export default function Login() {
               ...resJson.user,
             };
             setUserData(tempUserData);
+            setBookList(resJson.book_list);
           } else {
             setSnackBarOpen(true);
             setSnackBarStatus("error");

@@ -8,6 +8,7 @@ import { parseCookies } from "nookies";
 import {
   recommendationListState,
   recommendationState,
+  userBookListState,
   userDataState,
 } from "@/components/recoil/atom";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -15,6 +16,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 export default function Find() {
   const [bookList, setBookList] = useState([]);
   const userData = useRecoilValue(userDataState);
+  const userBookList = useRecoilValue(userBookListState);
   const [searched, setSearched] = useState(false);
   const [recommendation, setRecommendation] =
     useRecoilState(recommendationState);
@@ -115,11 +117,11 @@ export default function Find() {
     }
   }, []);
 
-  useEffect(() => {
-    if (userData?.bookList?.length > 0) {
-      setBookList(userData.bookList);
-    }
-  }, [userData]);
+  // useEffect(() => {
+  //   if (userBookList.length > 0) {
+  //     setBookList(userData.bookList);
+  //   }
+  // }, [userData]);
 
   console.log("SEARCHED", searched);
 

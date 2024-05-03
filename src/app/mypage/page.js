@@ -2,17 +2,18 @@
 import { useRecoilValue } from "recoil";
 import styles from "./page.module.css";
 import Navigation from "@/components/Navigation";
-import { userDataState } from "@/components/recoil/atom";
+import { userBookListState, userDataState } from "@/components/recoil/atom";
 import { Avatar, Button } from "@mui/material";
 import UserBookDonutChart from "@/components/charts/UserBookDonutChart";
 
-export default function Find() {
+export default function MyPage() {
   const userData = useRecoilValue(userDataState);
+  const bookList = useRecoilValue(userBookListState);
 
   console.log("USER", userData);
 
   const favGenre = () => {
-    const genreList = userData?.bookList?.map((book) => book.genre);
+    const genreList = bookList?.map((book) => book.genre);
     const genreCount = genreList?.reduce((acc, cur) => {
       acc[cur] = (acc[cur] || 0) + 1;
       return acc;
@@ -32,7 +33,7 @@ export default function Find() {
   };
 
   const genreChartLabel = () => {
-    const genreList = userData?.bookList?.map((book) => book.genre);
+    const genreList = bookList?.map((book) => book.genre);
     const genreCount = genreList?.reduce((acc, cur) => {
       acc[cur] = (acc[cur] || 0) + 1;
       return acc;
@@ -92,7 +93,7 @@ export default function Find() {
       <div className={styles.bookInfo}>
         <div className={styles.bookInfoContainer}>
           <span>전체 독서량</span>
-          <span className={styles.bookInfoLabel}>{userData?.record_book}</span>
+          <span className={styles.bookInfoLabel}>{bookList?.length}</span>
         </div>
         <div className={styles.bookInfoContainer}>
           <span>최애 장르</span>
@@ -100,7 +101,7 @@ export default function Find() {
         </div>
       </div>
       <div className={styles.genreInfo}>
-        {userData?.bookList?.length > 0 ? (
+        {bookList.length > 0 ? (
           <>
             <span>나의 장르</span>
             <div className={styles.genreChartContainer}>
