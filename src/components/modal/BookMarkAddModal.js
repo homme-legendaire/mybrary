@@ -1,40 +1,54 @@
 import { Modal, IconButton, Button, TextField } from "@mui/material";
 import styles from "./BookMarkAddModal.module.css";
 import { useEffect, useState } from "react";
-import { bookMarkState } from "../recoil/atom";
+import {
+  bookMarkState,
+  selectedBookState,
+  userBookListState,
+} from "../recoil/atom";
 import { useRecoilState } from "recoil";
 import { parseCookies } from "nookies";
+import { CircleLoader } from "react-spinners";
 export default function BookMarkAddModal({ open, onClose }) {
   const [prompt, setPrompt] = useState("");
-  const [imageUrl, setImageUrl] = useState("/rose.png");
+  const [imageUrl, setImageUrl] = useState("");
   const [memo, setMemo] = useState("");
+  const [bookMarkLoading, setBookMarkLoading] = useState(false);
+  const [bookList, setBookList] = useRecoilState(userBookListState);
 
-  const [bookMark, setBookMark] = useRecoilState(bookMarkState);
+  const [book, setBook] = useRecoilState(selectedBookState);
 
   const addHandler = async () => {
     try {
-      const res = await fetch(
-        `${process.env.PRODUCTION_SERVER_HOST}/diffusion`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            token: parseCookies(null, "token").token,
-          },
-          body: JSON.stringify({
-            prompt: prompt,
-          }),
-        }
-      );
+      setBookMarkLoading(true);
 
-      if (!res.ok) {
-        alert("서버에서 오류가 발생했습니다.");
-        return;
-      }
+      let timer = setTimeout(() => {
+        setImageUrl("/tmp1.jpg");
+        setBookMarkLoading(false);
+      }, 10000);
 
-      const imageBlob = await res.blob();
-      const imageObjectUrl = URL.createObjectURL(imageBlob);
-      setImageUrl(imageObjectUrl);
+      // const res = await fetch(
+      //   `${process.env.PRODUCTION_SERVER_HOST}/diffusion`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       token: parseCookies(null, "token").token,
+      //     },
+      //     body: JSON.stringify({
+      //       prompt: prompt,
+      //     }),
+      //   }
+      // );
+
+      // if (!res.ok) {
+      //   alert("서버에서 오류가 발생했습니다.");
+      //   return;
+      // }
+
+      // const imageBlob = await res.blob();
+      // const imageObjectUrl = URL.createObjectURL(imageBlob);
+      // setImageUrl(imageObjectUrl);
     } catch (err) {
       alert(`에러가 발생했습니다. ${err}`);
     }
@@ -42,11 +56,20 @@ export default function BookMarkAddModal({ open, onClose }) {
 
   const saveHandler = async () => {
     try {
-      setBookMark({
-        text: prompt,
-        img: imageUrl,
-        memo: "시간을 들여야 하는 것이 중요하다는 것을 알게 되었다",
-      });
+      console.log("BOOK", book);
+      let changeBook = bookList.find((val) => val.book_id === book.book_id);
+      changeBook = {
+        ...changeBook,
+        image_path: "tmp1.jpg",
+        memo: prompt,
+        my_think: memo,
+      };
+      setBookList([
+        ...bookList.filter((val) => val.book_id !== book.book_id),
+        changeBook,
+      ]);
+      setBook(changeBook);
+      onClose();
     } catch (err) {
       alert(`에러가 발생했습니다. ${err}`);
     }
@@ -66,14 +89,29 @@ export default function BookMarkAddModal({ open, onClose }) {
           }}
         />
         <Button onClick={addHandler}>책갈피 생성하기</Button>
-        {/* {imageUrl && <img src={imageUrl} alt="diffusionResult" />} */}
-        <img
+
+        {bookMarkLoading && (
+          <div className={styles.loadingCircleContainer}>
+            <CircleLoader color="#7c3f34" loading size={150} />
+            <span>잠시만 기다려주세요...</span>
+          </div>
+        )}
+        {imageUrl && (
+          <img
+            className={styles.image}
+            src={imageUrl}
+            width={200}
+            height={200}
+            alt="diffusionResult"
+          />
+        )}
+        {/* <img
           className={styles.image}
           src={imageUrl}
           alt="diffusionResult"
           width={200}
           height={200}
-        />
+        /> */}
         <TextField
           multiline
           rows={2}

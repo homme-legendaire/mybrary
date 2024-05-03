@@ -13,7 +13,7 @@ import Navigation from "@/components/Navigation";
 import { useLayoutEffect, useState } from "react";
 import { Add, Search } from "@mui/icons-material";
 import { useRecoilState } from "recoil";
-import { userBookListState } from "@/components/recoil/atom";
+import { selectedBookState, userBookListState } from "@/components/recoil/atom";
 import SelectedBookControlModal from "@/components/modal/SelectedBookControlModal";
 import { CircleLoader } from "react-spinners";
 import { parseCookies } from "nookies";
@@ -61,7 +61,8 @@ export default function Mybrary() {
 
   // 책 수정, 사진 촬영 모달 파트 변수
   const [selectedBookModalOpen, setSelectedBookModalOpen] = useState(false);
-  const [selectedBookForEdit, setSelectedBookForEdit] = useState({});
+  const [selectedBookForEdit, setSelectedBookForEdit] =
+    useRecoilState(selectedBookState);
 
   useLayoutEffect(() => {
     loadBookList();
@@ -326,7 +327,6 @@ export default function Mybrary() {
       <SelectedBookControlModal
         open={selectedBookModalOpen}
         onClose={() => setSelectedBookModalOpen(false)}
-        book={selectedBookForEdit}
       />
       <div className={styles.main}>
         <Select

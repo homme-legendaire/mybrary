@@ -1,18 +1,30 @@
 import { Modal, IconButton, Button } from "@mui/material";
 import styles from "./SelectedBookControlModal.module.css";
-import { AddAPhoto, BookmarkAdd, Delete, IosShare } from "@mui/icons-material";
-import { useState } from "react";
+import { AddAPhoto, Delete, IosShare } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import BookMarkModal from "./BookMarkModal";
 import BookMarkAddModal from "./BookMarkAddModal";
-import { useRecoilState } from "recoil";
-import { bookMarkState, userBookListState } from "../recoil/atom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { selectedBookState, userBookListState } from "../recoil/atom";
 import { parseCookies } from "nookies";
 
-export default function SelectedBookControlModal({ open, onClose, book }) {
-  const [bookMark, setBookMark] = useRecoilState(bookMarkState);
+export default function SelectedBookControlModal({ open, onClose }) {
+  const book = useRecoilValue(selectedBookState);
 
-  console.log("BOOK", book);
-  console.log("BOOKMARK", bookMark);
+  // 책갈피 변수
+  const [bookMark, setBookMark] = useState({});
+
+  useEffect(() => {
+    let tempBook = {};
+    if (book?.image_path) {
+      tempBook = {
+        img: "/" + book?.image_path,
+        text: book?.memo,
+        memo: book?.my_think,
+      };
+    }
+    setBookMark(tempBook);
+  }, [book]);
 
   // 책갈피 모달 변수
   const [bookMarkModalOpen, setBookMarkModalOpen] = useState(false);
@@ -38,7 +50,7 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
           headers: {
             "Content-Type": "application/json",
             token: parseCookies(null, "token").token,
-            book: book.docId,
+            book: book.book_id,
           },
         }
       );
@@ -64,6 +76,7 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
       <BookMarkModal
         open={bookMarkModalOpen}
         onClose={() => setBookMarkModalOpen(false)}
+        bookMark={bookMark}
       />
       <BookMarkAddModal
         open={bookMarkAddModalOpen}
@@ -153,7 +166,12 @@ export default function SelectedBookControlModal({ open, onClose, book }) {
               </span>
             </div>
             <div className={styles.bookDescription}>
-              <span className={styles.partTitle}>책갈피</span>
+              <div className={styles.bookPartHeader}>
+                <span className={styles.partTitle}>책갈피</span>
+                <IconButton onClick={() => setBookMark({})}>
+                  <Delete />
+                </IconButton>
+              </div>
               <div className={styles.bookMark}>
                 {Object.keys(bookMark).length === 0 ? (
                   <>책갈피를 제작해 보세요!</>
