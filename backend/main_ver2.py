@@ -555,7 +555,7 @@ class saveBook(BaseModel):
     title: str
     genre: str
     link: str
-    image_url: str
+    image: str
     author: str
     discount: int
     publisher: str
@@ -586,7 +586,7 @@ def saveBook(data:saveBook,token: Optional[str] = Header(None)):
             save_data={
                 "title": data.title,
                 "link": data.link,
-                "image_url": data.image_url,
+                "image": data.image,
                 "author": data.author,
                 "discount": data.discount,
                 "publisher": data.publisher,
