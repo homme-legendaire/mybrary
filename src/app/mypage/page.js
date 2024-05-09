@@ -175,7 +175,7 @@ export default function MyPage() {
       >
         SNS 공유하기
       </Button>
-      <Navigation value={3} />
+      <Navigation value={4} />
     </div>
   );
 }

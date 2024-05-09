@@ -592,7 +592,7 @@ export default function Find() {
         </>
       )}
 
-      <Navigation value={2} />
+      <Navigation value={3} />
     </div>
   );
 }

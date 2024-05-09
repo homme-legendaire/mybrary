@@ -1,0 +1,89 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  padding: 0 8px 0 8px;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+}
+
+.bookListHeader {
+  display: flex;
+  flex-direction: column;
+  margin-left: 4px;
+}
+
+.bookListTitle {
+  font-size: 24px;
+  font-weight: 500;
+  color: #333;
+}
+
+.bookListSubTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+}
+
+.bookMark {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 12px;
+  background-color: #f5f5f5;
+}
+
+.bookMarkListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bookMarkListItem {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 12px;
+  background-color: #f5f5f5;
+}
+
+.img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.bookMarkText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.bookMarkTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+
+.bookMarkScript {
+  font-size: 14px;
+  color: #666;
+}
+
+.bookMarkBtnContainer {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bookMarkBtn {
+  display: flex;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}

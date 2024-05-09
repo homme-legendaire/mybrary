@@ -3,6 +3,7 @@ import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 import {
   Home,
   MenuBook,
+  People,
   Person,
   ScreenSearchDesktop,
 } from "@mui/icons-material";
@@ -35,7 +36,7 @@ export default function Navigation({ value }) {
           onClick={() => router.push("/main")}
           sx={{
             "& .MuiBottomNavigationAction-label": {
-              fontSize: "1rem !important",
+              fontSize: "14px !important",
             },
           }}
         />
@@ -45,7 +46,17 @@ export default function Navigation({ value }) {
           onClick={() => router.push("/mybrary")}
           sx={{
             "& .MuiBottomNavigationAction-label": {
-              fontSize: "1rem !important",
+              fontSize: "14px !important",
+            },
+          }}
+        />
+        <BottomNavigationAction
+          label="게시판"
+          icon={<People fontSize="large" />}
+          onClick={() => router.push("/community")}
+          sx={{
+            "& .MuiBottomNavigationAction-label": {
+              fontSize: "14px !important",
             },
           }}
         />
@@ -55,7 +66,7 @@ export default function Navigation({ value }) {
           onClick={() => router.push("/find")}
           sx={{
             "& .MuiBottomNavigationAction-label": {
-              fontSize: "1rem !important",
+              fontSize: "14px !important",
             },
           }}
         />
@@ -65,7 +76,7 @@ export default function Navigation({ value }) {
           onClick={() => router.push("/mypage")}
           sx={{
             "& .MuiBottomNavigationAction-label": {
-              fontSize: "1rem !important",
+              fontSize: "14px !important",
             },
           }}
         />
