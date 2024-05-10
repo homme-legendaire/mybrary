@@ -415,7 +415,7 @@ def my_book(token: Optional[str] = Header(None)):
         if token == "undefined":
             return {"result": "fail"}
         
-        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴⚠️
         if user_info:
             collection_ref = db.collection(u'user')
             doc_ref = collection_ref.document(user_info['user_id']).collection(u'book')
@@ -429,7 +429,7 @@ def my_book(token: Optional[str] = Header(None)):
             if max_num == 0:
                 return {"result": "empty"}
             random_num = random.randint(0, max_num - 1)
-            book = saved_book[random_num].to_dict()
+            book = saved_book[random_num]
             print(book)
             image_path = book['image_path']
             image_name = book['image_name']
