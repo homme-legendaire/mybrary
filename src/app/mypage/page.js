@@ -1,16 +1,51 @@
 "use client";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import styles from "./page.module.css";
 import Navigation from "@/components/Navigation";
 import { userBookListState, userDataState } from "@/components/recoil/atom";
 import { Avatar, Button } from "@mui/material";
 import UserBookDonutChart from "@/components/charts/UserBookDonutChart";
+import { useLayoutEffect } from "react";
 
 export default function MyPage() {
-  const userData = useRecoilValue(userDataState);
-  const bookList = useRecoilValue(userBookListState);
+  const [userData, setUserData] = useRecoilState(userDataState);
+  const [bookList, setBookList] = useRecoilState(userBookListState);
 
-  console.log("USER", userData);
+  useLayoutEffect(() => {
+    if (Object.keys(userData).length === 0 || bookList.length === 0) {
+      fetchUserData();
+    }
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/userInfo`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+          },
+        }
+      );
+      const resJson = await res.json();
+      console.log(resJson);
+      let tempUserData = {};
+      if (resJson.result === "success") {
+        console.log("USER", resJson.user);
+        tempUserData = {
+          ...tempUserData,
+          ...resJson.user,
+        };
+        setUserData(tempUserData);
+        setBookList(resJson.book_list);
+      } else {
+      }
+    } catch (err) {
+      return;
+    }
+  };
 
   const favGenre = () => {
     const genreList = bookList?.map((book) => book.genre);
@@ -140,7 +175,7 @@ export default function MyPage() {
       >
         SNS 공유하기
       </Button>
-      <Navigation value={3} />
+      <Navigation value={4} />
     </div>
   );
 }

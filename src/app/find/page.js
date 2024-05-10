@@ -175,6 +175,7 @@ export default function Find() {
       if (firstKeyword === "" || secondKeyword === "" || thirdKeyword === "") {
         alert("모든 항목을 선택해주세요.");
       }
+      setNewBookRecommendationOpen(false);
       setFindLoading(true);
       const res = await fetch(
         `${process.env.PRODUCTION_SERVER_HOST}/findRecommend`,
@@ -570,7 +571,8 @@ export default function Find() {
                   />
                 </defs>
               </svg>
-              <span>아직 독서기록이 없어요!</span>
+              {/* <span>아직 독서기록이 없어요!</span> */}
+              <span>키워드만 고르면 맞춤 독서 추천을 받을 수 있어요!</span>
               <Button
                 fullWidth
                 sx={{
@@ -590,7 +592,7 @@ export default function Find() {
         </>
       )}
 
-      <Navigation value={2} />
+      <Navigation value={3} />
     </div>
   );
 }

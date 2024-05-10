@@ -18,6 +18,11 @@ export const userBookListState = atom({
   default: [],
 });
 
+export const selectedBookState = atom({
+  key: "selectedBookState",
+  default: {},
+});
+
 export const recommendationListState = atom({
   key: "recommendationListState",
   default: [],
