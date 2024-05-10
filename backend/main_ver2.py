@@ -423,7 +423,12 @@ def my_book(token: Optional[str] = Header(None)):
             saved_book = []
             for doc in doc_list:
                 dc=doc.to_dict()
-                if "image_path" in dc:
+                mark_list=db.collection(u'bookmark').document().where("book_id","==",doc.id).get()
+                list_mark=[]
+                for mark in mark_list:
+                    list_mark.append(mark.to_dict())
+                dc['bookmark']=list_mark
+                if len(list_mark)==0:
                     saved_book.append(dc)
             max_num = len(saved_book)
             if max_num == 0:
@@ -431,8 +436,11 @@ def my_book(token: Optional[str] = Header(None)):
             random_num = random.randint(0, max_num - 1)
             book = saved_book[random_num]
             print(book)
-            image_path = book['image_path']
-            image_name = book['image_name']
+            # 책갈피도 랜덤으로 가져오기
+            random_num = random.randint(0, len(book['bookmark']) - 1)
+            book['bookmark'] = book['bookmark'][random_num]
+            image_path = book['bookmark']['image_path']
+            image_name = book['bookmark']['image_name']
             # 이미지 파일을 base64 인코딩하여 JSON과 함께 반환
             with open(image_path, "rb") as image_file:
                 encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
@@ -518,6 +526,7 @@ def my_book_list(token: Optional[str] = Header(None)):
 
 class diffusionItem(BaseModel):
     prompt: str
+    book_id: str
 
 @app.post("/diffusion")
 def create_item( data: diffusionItem, token: Optional[str] = Header(None)):
@@ -537,8 +546,9 @@ def create_item( data: diffusionItem, token: Optional[str] = Header(None)):
             # return templates.TemplateResponse('index.html', {'request': request, 'user': data.prompt})
             image_path = result
             image_name = result
-            doc_ref = db.collection(u'user').document(user_info['user_id']).collection(u'book').document()
+            doc_ref = db.collection(u'bookmark').document()
             doc_ref.update({
+                "book_id": data.book_id,
                 "image_path": image_path,
                 "image_name": image_name,
                 "memo":data.prompt,
@@ -699,6 +709,12 @@ def userInfo(token: Optional[str] = Header(None)):
             book_list = []
             for doc in doc_list:
                 book = doc.to_dict()
+                book_id=doc.id
+                mark_list=[]
+                bookmark = db.collection(u'bookmark').document().where("book_id","==",book_id).get()
+                for doc in bookmark:
+                    mark_list.append(doc.to_dict())
+                book['bookmark']=mark_list
                 book_list.append(book)
             
             
@@ -727,6 +743,12 @@ def userBook(token: Optional[str] = Header(None)):
             book_list = []
             for doc in doc_list:
                 book = doc.to_dict()
+                book_id=doc.id
+                mark_list=[]
+                bookmark = db.collection(u'bookmark').document().where("book_id","==",book_id).get()
+                for doc in bookmark:
+                    mark_list.append(doc.to_dict())
+                book['bookmark']=mark_list
                 book_list.append(book)
             return {"result": "success", "book_list": book_list}
         else:
