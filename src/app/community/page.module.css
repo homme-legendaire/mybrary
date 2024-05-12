@@ -8,9 +8,8 @@
 }
 
 .bookListHeader {
-  display: flex;
-  flex-direction: column;
-  margin-left: 4px;
+  width: 100%;
+  padding: 8px;
 }
 
 .bookListTitle {
@@ -35,9 +34,9 @@
 }
 
 .bookMarkListContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
 }
 
 .bookMarkListItem {
@@ -45,14 +44,13 @@
   flex-direction: column;
   width: 100%;
   gap: 4px;
-  padding: 8px;
   border-radius: 12px;
   background-color: #f5f5f5;
 }
 
 .img {
   width: 100%;
-  border-radius: 12px;
+  height: 100%;
 }
 
 .bookMarkText {
