@@ -3,7 +3,7 @@ import styles from "./BookMarkModal.module.css";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 
-export default function BookMarkModal({ open, onClose, bookMark }) {
+export default function BookMarkModal({ open, onClose, bookMark, control }) {
   const [frontSide, setFrontSide] = useState(true);
   const [bookMarkMemoClicked, setBookMarkMemoClicked] = useState(false);
   const [bookMarkMemo, setBookMarkMemo] = useState("");
@@ -45,14 +45,16 @@ export default function BookMarkModal({ open, onClose, bookMark }) {
             />
             <div className={styles.overlayText}>
               <div className={styles.header}>
-                <span className={styles} onClick={bookMarkEditSaveHandler}>
-                  저장
-                </span>
+                {control && (
+                  <span className={styles} onClick={bookMarkEditSaveHandler}>
+                    저장
+                  </span>
+                )}
               </div>
               <div className={styles.body}>
                 <span className={styles.bookMarkText}>{bookMark.text}</span>
                 <span className={styles.bookMarkMemo}>
-                  {bookMarkMemoClicked ? (
+                  {bookMarkMemoClicked && control ? (
                     <input
                       type="text"
                       value={bookMarkMemo}

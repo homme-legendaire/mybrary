@@ -10,106 +10,153 @@ import {
   Select,
 } from "@mui/material";
 import { Favorite, Search, ThumbDown, ThumbUp } from "@mui/icons-material";
+import { useRecoilValue } from "recoil";
+import { selectedBookState } from "@/components/recoil/atom";
+import BookMarkModal from "@/components/modal/BookMarkModal";
 
 export default function Community() {
   const [bookMarkOrder, setBookMarkOrder] = useState("최신순");
   const [bookMarkList, setBookMarkList] = useState([
     {
       title: "어린왕자",
-      script: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      src: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
+      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
     },
     {
       title: "나니아연대기",
-      script: "날 피해서 숨은 거예요?",
-      src: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      memo: "날 피해서 숨은 거예요?",
+      my_think: "날 피해서 숨은 거예요?",
+      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
     },
     {
       title: "인간실격",
-      script: "그것은 세상이 용서하지 않아",
-      src: "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
+      memo: "그것은 세상이 용서하지 않아",
+      my_think: "그것은 세상이 용서하지 않아",
+      image_path:
+        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
     },
     {
       title: "어린왕자",
-      script: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      src: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
+      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
     },
     {
       title: "나니아연대기",
-      script: "날 피해서 숨은 거예요?",
-      src: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      memo: "날 피해서 숨은 거예요?",
+      my_think: "날 피해서 숨은 거예요?",
+      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
     },
     {
       title: "인간실격",
-      script: "그것은 세상이 용서하지 않아",
-      src: "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
+      memo: "그것은 세상이 용서하지 않아",
+      my_think: "그것은 세상이 용서하지 않아",
+      image_path:
+        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
     },
     {
       title: "어린왕자",
-      script: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      src: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
+      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
     },
     {
       title: "나니아연대기",
-      script: "날 피해서 숨은 거예요?",
-      src: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      memo: "날 피해서 숨은 거예요?",
+      my_think: "날 피해서 숨은 거예요?",
+      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
     },
     {
       title: "인간실격",
-      script: "그것은 세상이 용서하지 않아",
-      src: "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
+      memo: "그것은 세상이 용서하지 않아",
+      my_think: "그것은 세상이 용서하지 않아",
+      image_path:
+        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
     },
     {
       title: "어린왕자",
-      script: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      src: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
+      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
     },
     {
       title: "나니아연대기",
-      script: "날 피해서 숨은 거예요?",
-      src: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      memo: "날 피해서 숨은 거예요?",
+      my_think: "날 피해서 숨은 거예요?",
+      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
     },
     {
       title: "인간실격",
-      script: "그것은 세상이 용서하지 않아",
-      src: "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
+      memo: "그것은 세상이 용서하지 않아",
+      my_think: "그것은 세상이 용서하지 않아",
+      image_path:
+        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
     },
     {
       title: "어린왕자",
-      script: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      src: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
+      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
     },
     {
       title: "나니아연대기",
-      script: "날 피해서 숨은 거예요?",
-      src: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      memo: "날 피해서 숨은 거예요?",
+      my_think: "날 피해서 숨은 거예요?",
+      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
     },
     {
       title: "인간실격",
-      script: "그것은 세상이 용서하지 않아",
-      src: "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
+      memo: "그것은 세상이 용서하지 않아",
+      my_think: "그것은 세상이 용서하지 않아",
+      image_path:
+        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
     },
     {
       title: "어린왕자",
-      script: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      src: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
+      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
+      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
     },
     {
       title: "나니아연대기",
-      script: "날 피해서 숨은 거예요?",
-      src: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      memo: "날 피해서 숨은 거예요?",
+      my_think: "날 피해서 숨은 거예요?",
+      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
     },
     {
       title: "인간실격",
-      script: "그것은 세상이 용서하지 않아",
-      src: "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
+      memo: "그것은 세상이 용서하지 않아",
+      my_think: "그것은 세상이 용서하지 않아",
+      image_path:
+        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
     },
   ]);
 
   const [searchKeyword, setSearchKeyword] = useState("");
 
+  // 책갈피 변수
+  const [bookMark, setBookMark] = useState({});
+  const [bookMarkModalOpen, setBookMarkModalOpen] = useState(false);
+
+  const bookMarkSelectHandler = (book) => {
+    setBookMark({
+      // img: "/" + book?.image_path,
+      img: book?.image_path,
+      text: book?.memo,
+      memo: book?.my_think,
+    });
+    setBookMarkModalOpen(true);
+  };
+
   return (
     <div className={styles.container}>
+      <BookMarkModal
+        open={bookMarkModalOpen}
+        onClose={() => setBookMarkModalOpen(false)}
+        bookMark={bookMark}
+        control={false}
+      />
       <div className={styles.bookListHeader}>
         <Input
           fullWidth
@@ -136,10 +183,10 @@ export default function Community() {
         </div>
       </div>
       <div className={styles.bookMark}>
-        <img src={bestBookMark.src} className={styles.img} />
+        <img src={bestBookMark.image_path} className={styles.img} />
         <div className={styles.bookMarkText}>
           <span className={styles.bookMarkTitle}>{bestBookMark.title}</span>
-          <span className={styles.bookMarkScript}>{bestBookMark.script}</span>
+          <span className={styles.bookMarkScript}>{bestBookMark.memo}</span>
         </div>
         <div className={styles.bookMarkBtnContainer}>
           <div className={styles.bookMarkBtn}>
@@ -191,10 +238,10 @@ export default function Community() {
       <div className={styles.bookMarkListContainer}>
         {bookMarkList.map((book, idx) => (
           <div key={idx} className={styles.bookMarkListItem}>
-            <img src={book.src} className={styles.img} />
+            <img src={book.image_path} className={styles.img} />
             <div className={styles.bookMarkText}>
               <span className={styles.bookMarkTitle}>{book.title}</span>
-              <span className={styles.bookMarkScript}>{book.script}</span>
+              <span className={styles.bookMarkScript}>{book.memo}</span>
             </div>
             <div className={styles.bookMarkBtnContainer}>
               <div className={styles.bookMarkBtn}>
@@ -220,11 +267,15 @@ export default function Community() {
 
       <div className={styles.bookMarkListContainer}>
         {bookMarkList.map((book, idx) => (
-          <div key={idx} className={styles.bookMarkListItem}>
-            <img src={book.src} className={styles.img} />
+          <div
+            key={idx}
+            className={styles.bookMarkListItem}
+            onClick={() => bookMarkSelectHandler(book)}
+          >
+            <img src={book.image_path} className={styles.img} />
             {/* <div className={styles.bookMarkText}>
               <span className={styles.bookMarkTitle}>{book.title}</span>
-              <span className={styles.bookMarkScript}>{book.script}</span>
+              <span className={styles.bookMarkScript}>{book.memo}</span>
             </div> */}
             {/* <div className={styles.bookMarkBtnContainer}>
               <div className={styles.bookMarkBtn}>

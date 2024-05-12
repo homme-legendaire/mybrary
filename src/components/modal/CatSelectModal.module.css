@@ -1,0 +1,57 @@
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 510px;
+  overflow: auto;
+  padding: 12px;
+  border-radius: 4px;
+
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  perspective: 1000px;
+}
+
+.modalHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modalTitle {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.modalSubTitle {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.catList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.catItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #f5f5f5;
+}
+
+.catImg {
+  width: 100%;
+}

@@ -18,6 +18,27 @@ export const userBookListState = atom({
   default: [],
 });
 
+export const userBookMarkListState = atom({
+  key: "userBookMarkListState",
+  // default: [{ title: "야옹" }],
+  default: [
+    { title: "야옹" },
+    { title: "야옹" },
+    { title: "야옹" },
+    { title: "야옹" },
+    { title: "야옹" },
+    { title: "야옹" },
+    { title: "야옹" },
+    { title: "야옹" },
+    { title: "야옹" },
+  ],
+});
+
+export const catColorState = atom({
+  key: "catColorState",
+  default: "",
+});
+
 export const selectedBookState = atom({
   key: "selectedBookState",
   default: {},

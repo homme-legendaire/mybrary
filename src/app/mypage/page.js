@@ -1,15 +1,26 @@
 "use client";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styles from "./page.module.css";
 import Navigation from "@/components/Navigation";
-import { userBookListState, userDataState } from "@/components/recoil/atom";
-import { Avatar, Button } from "@mui/material";
+import {
+  catColorState,
+  userBookListState,
+  userBookMarkListState,
+  userDataState,
+} from "@/components/recoil/atom";
+import { Avatar, Button, Tooltip } from "@mui/material";
 import UserBookDonutChart from "@/components/charts/UserBookDonutChart";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
+import CatSelectModal from "@/components/modal/CatSelectModal";
 
 export default function MyPage() {
   const [userData, setUserData] = useRecoilState(userDataState);
   const [bookList, setBookList] = useRecoilState(userBookListState);
+  const [bookMarkList, setBookMarkList] = useRecoilState(userBookMarkListState);
+  const catColor = useRecoilValue(catColorState);
+
+  // 고양이 선택 모달
+  const [catSelectModalOpen, setCatSelectModalOpen] = useState(false);
 
   useLayoutEffect(() => {
     if (Object.keys(userData).length === 0 || bookList.length === 0) {
@@ -94,8 +105,23 @@ export default function MyPage() {
     return genrePercentageLabel;
   };
 
+  const catTitle = () => {
+    if (bookMarkList.length < 3) {
+      return `Lv.1 ${catColor}`;
+    } else if (bookMarkList.length < 9) {
+      return `Lv.2 ${catColor}`;
+    } else if (bookMarkList.length < 15) {
+      return `Lv.3 ${catColor}`;
+    }
+    return `Lv.4 ${catColor}`;
+  };
+
   return (
     <div className={styles.container}>
+      <CatSelectModal
+        open={catSelectModalOpen}
+        onClose={() => setCatSelectModalOpen(false)}
+      />
       <div className={styles.userInfoContainer}>
         <div className={styles.userIcon}>
           <Avatar
@@ -135,6 +161,58 @@ export default function MyPage() {
           <span className={styles.bookInfoLabel}>{favGenre()}</span>
         </div>
       </div>
+      <div className={styles.catInfo}>
+        {catColor !== "" ? (
+          <>
+            <span>책냥이 키우기</span>
+            <div className={styles.catContainer}>
+              <div
+                className={styles.catIcon}
+                style={{
+                  marginLeft: `${(bookMarkList.length / 20) * 100}%`,
+                }}
+              >
+                <Avatar
+                  sx={{
+                    backgroundColor: "third.main",
+                    width: "50px",
+                    height: "50px",
+                    my: "4px",
+                  }}
+                />
+                <span>{catTitle()}</span>
+              </div>
+              <div className={styles.progressBarContainer}>
+                <div
+                  className={styles.progressBar}
+                  style={{ width: `${(bookMarkList.length / 20) * 100}%` }}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <span>책냥이 키우기</span>
+            <div className={styles.voidContainer}>
+              <span>아직 책냥이를 고르지 않았어요.</span>
+              <Button
+                fullWidth
+                sx={{
+                  fontSize: "1.25rem",
+                  color: "#ffffff",
+                  backgroundColor: "secondary.main",
+                  "&:hover": {
+                    backgroundColor: "secondary.dark",
+                  },
+                }}
+                onClick={() => setCatSelectModalOpen(true)}
+              >
+                책냥이 고르기
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
       <div className={styles.genreInfo}>
         {bookList.length > 0 ? (
           <>
@@ -162,6 +240,7 @@ export default function MyPage() {
           </>
         )}
       </div>
+
       <Button
         fullWidth
         sx={{

@@ -68,6 +68,53 @@
   font-size: 1.5rem;
 }
 
+.catInfo {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 16px;
+}
+
+.catInfo span {
+  margin-left: 4px;
+}
+
+.catIcon {
+  display: flex;
+  flex-direction: column;
+}
+
+.catIcon span {
+  font-size: 14px;
+}
+
+.catContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  margin-left: -20px;
+  padding: 12px;
+  background-color: #f5f5f5;
+}
+
+.progressBarContainer {
+  width: 100%;
+  background-color: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressBar {
+  height: 20px;
+  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  border-radius: 10px;
+  transition: width 0.4s ease;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
 .genreInfo {
   display: flex;
   flex-direction: column;

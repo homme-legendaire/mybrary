@@ -77,6 +77,7 @@ export default function SelectedBookControlModal({ open, onClose }) {
         open={bookMarkModalOpen}
         onClose={() => setBookMarkModalOpen(false)}
         bookMark={bookMark}
+        control={true}
       />
       <BookMarkAddModal
         open={bookMarkAddModalOpen}
