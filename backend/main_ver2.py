@@ -536,34 +536,99 @@ def create_item( data: diffusionItem, token: Optional[str] = Header(None)):
             return {"status": "fail"}
         user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
         if user_info:
+            image_list=[]
             translated = translator.translate(data.prompt).text
             translated= '\"' + translated + ' \"'
             # 번역된 문장 이미지 생성에 알맞는 Prompt로 변경
             response = model.generate_content("Change the next sentence"+translated+"for prompt English sentence suitable for image creation.")
             print(response.text)
-            result=diffusion(response.text)
-            print(result)
-            # return templates.TemplateResponse('index.html', {'request': request, 'user': data.prompt})
-            image_path = result
-            image_name = result
-            doc_ref = db.collection(u'bookmark').document()
-            doc_ref.update({
-                "book_id": data.book_id,
-                "image_path": image_path,
-                "image_name": image_name,
-                "memo":data.prompt,
-                "my_think":data.prompt,
-            })
-            doc_id = doc_ref.id
-            with open(image_path, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            for i in range (3):
+                result=diffusion(response.text)
+                print(result)
+                # return templates.TemplateResponse('index.html', {'request': request, 'user': data.prompt})
+                image_path = result
+                image_name = result
+                with open(image_path, "rb") as image_file:
+                    encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                image_list.append({"image_data": encoded_string, "image_name": image_name})
+            # doc_ref = db.collection(u'bookmark').document()
+            # doc_ref.update({
+            #     "book_id": data.book_id,
+            #     "image_path": image_path,
+            #     "image_name": image_name,
+            #     "memo":data.prompt,
+            #     "my_think":data.prompt,
+            # })
+            # doc_id = doc_ref.id
             
-            return {"status": "success", "image_data": encoded_string, "image_name": image_name,"book_id":doc_id}
+            return {"status": "success", "image_list":image_list}
         else:
             return {"status": "fail"}
     except Exception as e:
         print(e)
         return {"status": "fail"}
+    
+class saveBookmark(BaseModel): ## 책갈피 3개 중 하나 선택해서 저장한 것
+    book_id: str
+    memo: str
+    my_think: str
+    image_path: str
+def save_bookmark(data: saveBookmark, token: Optional[str] = Header(None)):
+    try:
+        '''책갈피 저장하는 API bookmark은 책의 ID를 diffusion 이미지 생성때 준 ID를 사용'''
+        if token == "undefined":
+            return {"status": "fail"}
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        if user_info:
+            doc_ref = db.collection(u'bookmark').document()
+            doc_ref.set({
+                "book_id": data.book_id,
+                "image_path": data.image_path,
+                "image_name": data.image_path,
+                "memo": data.memo,
+                "my_think": data.my_think,
+            })
+            with open(data.image_path, "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            doc_id = doc_ref.id
+            return {"status": "success", "image": encoded_string, "bookmark_id": doc_id}
+        else:
+            return {"status": "fail"}
+    except Exception as e:
+        return {"status": "fail"}
+
+class Loadbookmark(BaseModel):
+    book_id: str
+@app.post("/loadBookmark")
+def loadBookmark(data:Loadbookmark,token: Optional[str] = Header(None)):
+    '''책갈피 정보를 가져오는 API bookmark은 책의 ID를 diffusion 이미지 생성때 준 ID를 사용'''
+    try:
+        if token == "undefined":
+            return {"result": "fail"}
+        
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        if user_info:
+            collection_ref = db.collection(u'bookmark')
+            doc_ref = collection_ref.where("book_id","==",data.book_id).get()
+            bookmark_list = []
+            for doc in doc_ref:
+                bookmark = doc.to_dict()
+                with open(bookmark['image_path'], "rb") as image_file:
+                    encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                bookmark['encoding_image'] = encoded_string
+                bookmark_list.append(bookmark)
+            return {"result": "success", "bookmark_list": bookmark_list}
+        else:
+            return {"result": "fail"}
+    except Exception as e:
+        return {"result": "fail", "error": str(e)}
+
+class edittBookmark(BaseModel): ## 책갈피 3개 중 하나 선택해서 저장한 것
+    bookmark_id: str
+    memo: str
+    my_think: str
+    image_path: str
+
 
 class saveBook(BaseModel):
     title: str
