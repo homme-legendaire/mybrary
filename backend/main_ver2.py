@@ -587,6 +587,11 @@ def save_bookmark(data: saveBookmark, token: Optional[str] = Header(None)):
                 "image_name": data.image_path,
                 "memo": data.memo,
                 "my_think": data.my_think,
+                "like": 0,
+                "createdAt": datetime.now(tz=timezone(timedelta(hours=9))),
+                "dislike": 0,
+                "likeUser": [],
+                "dislikeUser": [],
             })
             with open(data.image_path, "rb") as image_file:
                 encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
@@ -628,6 +633,27 @@ class edittBookmark(BaseModel): ## 책갈피 3개 중 하나 선택해서 저장
     memo: str
     my_think: str
     image_path: str
+@app.post("/editBookmark")
+def editBookmark(token: Optional[str] = Header(None), bookmark: Optional[str] = Header(None)):
+    '''책갈피 이미지 수정하기 API 아직 개발중 완성되면 맞춰 개발 예정'''
+    try:
+        if token == "undefined":
+            return {"result": "fail"}
+        
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        if user_info:
+            collection_ref = db.collection(u'bookmark')
+            doc_ref = collection_ref.document(bookmark)
+            bookmark = doc_ref.get().to_dict()
+            with open(bookmark['image_path'], "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            bookmark['encoding_image'] = encoded_string
+            return {"result": "success", "bookmark": bookmark}
+        else:
+            return {"result": "fail"}
+        
+    except Exception as e:
+        return {"result": "fail", "error": str(e)}
 
 
 class saveBook(BaseModel):
@@ -751,8 +777,30 @@ def myLibrary(token: Optional[str] = Header(None)):
     except Exception as e:
         return {"result": "fail", "error": str(e)}
 
-
-
+class catSave(BaseModel):
+    catName: str
+@app.post("/saveCat")
+def saveCat(data:catSave,token: Optional[str] = Header(None)):
+    '''카테고리 저장하는 API'''
+    try:
+        if token == "undefined":
+            return {"result": "fail"}
+        
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        if user_info:
+            collection_ref = db.collection(u'user')
+            doc_ref = collection_ref.document(user_info['user_id'])
+            doc_ref.update({
+                "catName": data.catName
+            })
+            with open(data.catName, "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            return {"result": "success", "catImg": encoded_string}
+        else:
+            return {"result": "fail"}
+        
+    except Exception as e:
+        return {"result": "fail", "error": str(e)}
 
 
 
@@ -782,10 +830,159 @@ def userInfo(token: Optional[str] = Header(None)):
                 book['bookmark']=mark_list
                 book_list.append(book)
             
-            
+            # 5/17 추가
+            if len(book_list) < 10:
+                level="0"
+            elif len(book_list) < 20:
+                level="1"
+            elif len(book_list) < 30:
+                level="2"
+            else:
+                level="3"
+            with open(user['catName']+level+".jpg", "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            user['catImg'] = encoded_string
             return {"result": "success", "user": user, "book_list": book_list}
         else:
             return {"result": "fail"}
+    except Exception as e:
+        return {"result": "fail", "error": str(e)}
+
+
+
+@app.get ("/shareBook")
+def shareBook(token: Optional[str] = Header(None)):
+    '''책 정보를 공유하는 API book은 책의 ID를 diffusion 이미지 생성때 준 ID를 사용'''
+    try:
+        if token == "undefined":
+            return {"result": "fail"}
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        book_list = db.collection(u'bookmark').get()
+        return_list=[]
+        for doc in book_list:
+            book = doc.to_dict()
+            if user_info['user_id'] in book['likeUser']:
+                book['user_select'] = True
+                book['user_like'] = True
+                book['user_dislike'] = False
+            elif user_info['user_id'] in book['dislikeUser']:
+                book['user_select'] = True
+                book['user_like'] = False
+                book['user_dislike'] = True
+            book['bookmark_id'] = doc.id
+            with open(book['image_path'], "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            book['encoding_image'] = encoded_string
+            return_list.append(book)
+        
+        return {"result": "success", "book_list": return_list}
+    except Exception as e:
+        return {"result": "fail", "error": str(e)}
+
+class likeBookmark(BaseModel):
+    like : bool
+    dislike : bool
+@app.post("/likeBookmark")
+def likeBookmark(data:likeBookmark,token: Optional[str] = Header(None), bookmark: Optional[str] = Header(None)):
+    '''책갈피에 좋아요를 누르는 API bookmark은 책의 ID를 diffusion 이미지 생성때 준 ID를 사용'''
+    try:
+        if token == "undefined":
+            return {"result": "fail"}
+        
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        if user_info:
+            doc_ref = db.collection(u'bookmark').document(bookmark)
+            doc = doc_ref.get().to_dict()
+            if user_info['user_id'] in doc['likeUser'] or user_info['user_id'] in doc['dislikeUser']:
+                if data.like:
+                    if user_info['user_id'] in doc['likeUser']:
+                        doc['like'] -= 1
+                        doc['likeUser'].remove(user_info['user_id'])
+                    else:
+                        doc['dislike'] -= 1
+                        doc['dislikeUser'].remove(user_info['user_id'])
+                        doc['like'] += 1
+                        doc['likeUser'].append(user_info['user_id'])
+                elif data.dislike:
+                    if user_info['user_id'] in doc['dislikeUser']:
+                        doc['dislike'] -= 1
+                        doc['dislikeUser'].remove(user_info['user_id'])
+                    else:
+                        doc['like'] -= 1
+                        doc['likeUser'].remove(user_info['user_id'])
+                        doc['dislike'] += 1
+                        doc['dislikeUser'].append(user_info['user_id'])
+
+            else:
+                if data.like:
+                    doc['like'] += 1
+                    doc['likeUser'].append(user_info['user_id'])
+                if data.dislike:
+                    doc['dislike'] += 1
+                    doc['dislikeUser'].append(user_info['user_id'])
+
+            doc_ref.update(doc)
+            return {"result": "success", "bookmark": doc}
+        else:
+            return {"result": "fail"}
+        
+    except Exception as e:
+        return {"result": "fail", "error": str(e)}
+
+
+
+@app.get("/loadMyBook")
+def loadMyBook(token: Optional[str] = Header(None)):
+    '''내가 저장한 책들을 가져오는 API book은 책의 ID를 diffusion 이미지 생성때 준 ID를 사용'''
+    try:
+        if token == "undefined":
+            return {"result": "fail"}
+        
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        if user_info:
+            book_dict={}
+            collection_ref = db.collection(u'user')
+            doc_ref = collection_ref.document(user_info['user_id']).collection(u'book')
+            doc_list = doc_ref.get()
+            book_list = []
+            for doc in doc_list:
+                book = doc.to_dict()
+                book['book_id'] = doc.id
+                # gerne로 dict 만들기
+                if book['genre'] not in book_dict:
+                    book_dict[book['genre']]=[]
+                book_dict[book['genre']].append(book)
+            return {"result": "success", "book_list": book_dict}
+        else:
+            return {"result": "fail"}
+        
+    except Exception as e:
+        return {"result": "fail", "error": str(e)}
+    
+class recommendItem(BaseModel):
+    select_user_genre: str 
+    want_recommend: str
+@app.post("/userAIchoice")
+def userAIchoice(data:recommendItem,token: Optional[str] = Header(None)):
+    '''유저 정보를 통한 AI 추천 API 아직 개발중 완성되면 코드 부착'''
+    try:
+        if token == "undefined":
+            return {"result": "fail"}
+        
+        user_info = verifying(token)  # Token을 검증하여 사용자 정보를 가져옴
+        if user_info:
+            collection_ref = db.collection(u'user')
+            doc_ref = collection_ref.document(user_info['user_id']).collection(u'book').where("genre","==",data.select_user_genre).get()
+            book_list = []
+            for doc in doc_ref:
+                book = doc.to_dict()
+                book_list.append(book)
+            # 여기서 멀티 AI 추천 알고리즘을 통해 추천 책을 가져옴
+
+            return {"result": "success"}
+        else:
+            return {"result": "fail"}
+        
     except Exception as e:
         return {"result": "fail", "error": str(e)}
 
