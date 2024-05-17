@@ -543,11 +543,13 @@ def create_item( data: diffusionItem, token: Optional[str] = Header(None)):
             response = model.generate_content("Change the next sentence"+translated+"for prompt English sentence suitable for image creation.")
             print(response.text)
             for i in range (3):
-                result=diffusion(response.text)
-                print(result)
-                # return templates.TemplateResponse('index.html', {'request': request, 'user': data.prompt})
-                image_path = result
-                image_name = result
+                # result=diffusion(response.text)
+                # print(result)
+                # # return templates.TemplateResponse('index.html', {'request': request, 'user': data.prompt})
+                # image_path = result
+                # image_name = result
+                image_path = f"tmp0.jpg"
+                image_name = f"tmp0.jpg"
                 with open(image_path, "rb") as image_file:
                     encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
                 image_list.append({"image_data": encoded_string, "image_name": image_name})
