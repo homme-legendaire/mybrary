@@ -573,6 +573,7 @@ class saveBookmark(BaseModel): ## 책갈피 3개 중 하나 선택해서 저장�
     memo: str
     my_think: str
     image_path: str
+@app.post("/saveBookmark")
 def save_bookmark(data: saveBookmark, token: Optional[str] = Header(None)):
     try:
         '''책갈피 저장하는 API bookmark은 책의 ID를 diffusion 이미지 생성때 준 ID를 사용'''
