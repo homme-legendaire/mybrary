@@ -18,99 +18,46 @@ export default function Community() {
   const [bookMarkOrder, setBookMarkOrder] = useState("최신순");
   const [bookMarkList, setBookMarkList] = useState([
     {
-      title: "어린왕자",
-      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
-    },
-    {
-      title: "나니아연대기",
-      memo: "날 피해서 숨은 거예요?",
-      my_think: "날 피해서 숨은 거예요?",
-      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      title: "인간실격",
+      memo: "그것은 세상이 용서하지 않아",
+      my_think: "그것은 세상이 용서하지 않아",
+      image_path: "./책갈피0.png",
     },
     {
       title: "인간실격",
       memo: "그것은 세상이 용서하지 않아",
       my_think: "그것은 세상이 용서하지 않아",
-      image_path:
-        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
-    },
-    {
-      title: "어린왕자",
-      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
-    },
-    {
-      title: "나니아연대기",
-      memo: "날 피해서 숨은 거예요?",
-      my_think: "날 피해서 숨은 거예요?",
-      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      image_path: "./책갈피1.png",
     },
     {
       title: "인간실격",
       memo: "그것은 세상이 용서하지 않아",
       my_think: "그것은 세상이 용서하지 않아",
-      image_path:
-        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
-    },
-    {
-      title: "어린왕자",
-      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
-    },
-    {
-      title: "나니아연대기",
-      memo: "날 피해서 숨은 거예요?",
-      my_think: "날 피해서 숨은 거예요?",
-      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      image_path: "./책갈피2.png",
     },
     {
       title: "인간실격",
       memo: "그것은 세상이 용서하지 않아",
       my_think: "그것은 세상이 용서하지 않아",
-      image_path:
-        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
-    },
-    {
-      title: "어린왕자",
-      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
-    },
-    {
-      title: "나니아연대기",
-      memo: "날 피해서 숨은 거예요?",
-      my_think: "날 피해서 숨은 거예요?",
-      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      image_path: "./책갈피3.png",
     },
     {
       title: "인간실격",
       memo: "그것은 세상이 용서하지 않아",
       my_think: "그것은 세상이 용서하지 않아",
-      image_path:
-        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
-    },
-    {
-      title: "어린왕자",
-      memo: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      my_think: "사막이 아름다운 건 어디엔가 샘을 감추고 있기 때문이야",
-      image_path: "https://t1.daumcdn.net/cfile/tistory/998D344B5BF5070114",
-    },
-    {
-      title: "나니아연대기",
-      memo: "날 피해서 숨은 거예요?",
-      my_think: "날 피해서 숨은 거예요?",
-      image_path: "https://cdn.hankyung.com/photo/201810/01.17952867.1.jpg",
+      image_path: "./책갈피4.jpg",
     },
     {
       title: "인간실격",
       memo: "그것은 세상이 용서하지 않아",
       my_think: "그것은 세상이 용서하지 않아",
-      image_path:
-        "https://i.pinimg.com/564x/a9/ce/79/a9ce79d3065ef432ba1b4412517b0548.jpg",
+      image_path: "./책갈피5.png",
+    },
+    {
+      title: "인간실격",
+      memo: "그것은 세상이 용서하지 않아",
+      my_think: "그것은 세상이 용서하지 않아",
+      image_path: "./책갈피6.png",
     },
     {
       title: "어린왕자",

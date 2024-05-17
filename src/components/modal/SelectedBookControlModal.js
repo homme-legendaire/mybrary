@@ -7,9 +7,23 @@ import BookMarkAddModal from "./BookMarkAddModal";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { selectedBookState, userBookListState } from "../recoil/atom";
 import { parseCookies } from "nookies";
+import { styled } from "@mui/material/styles";
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
+
+const WhiteTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#ffffff",
+    color: "rgba(0,0,0,0.87)",
+    boxShadow: "0px 3px 8px rgba(0, 0, 0, 0.15)",
+  },
+}));
 
 export default function SelectedBookControlModal({ open, onClose }) {
   const book = useRecoilValue(selectedBookState);
+
+  const [snsTooltipOpen, setSnsTooltipOpen] = useState(false);
 
   // 책갈피 변수
   const [bookMark, setBookMark] = useState({});
@@ -151,9 +165,21 @@ export default function SelectedBookControlModal({ open, onClose }) {
                   <AddAPhoto />
                 </IconButton>
               )}
-              <IconButton>
-                <IosShare />
-              </IconButton>
+              <WhiteTooltip
+                open={snsTooltipOpen}
+                title="공유하기"
+                sx={{
+                  marginTop: "-36px !important",
+                }}
+              >
+                <IconButton
+                  onClick={() => {
+                    setSnsTooltipOpen(!snsTooltipOpen);
+                  }}
+                >
+                  <IosShare />
+                </IconButton>
+              </WhiteTooltip>
               <IconButton onClick={() => setBookDeleteModalOpen(true)}>
                 <Delete />
               </IconButton>

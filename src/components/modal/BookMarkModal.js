@@ -1,4 +1,4 @@
-import { Modal, IconButton } from "@mui/material";
+import { Modal, IconButton, Avatar } from "@mui/material";
 import styles from "./BookMarkModal.module.css";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";

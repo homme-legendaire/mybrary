@@ -40,6 +40,19 @@
   gap: 8px;
 }
 
+.selectedCat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: rgba(124, 63, 52, 0.4);
+  color: #ffffff;
+}
+
 .catItem {
   display: flex;
   flex-direction: column;

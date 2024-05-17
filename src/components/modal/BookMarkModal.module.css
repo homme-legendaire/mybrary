@@ -90,3 +90,14 @@
 .bookMarkMemoInput:focus {
   outline: none;
 }
+
+.bookMarkMemoContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.snsIconDiv {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}

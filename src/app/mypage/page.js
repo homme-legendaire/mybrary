@@ -116,6 +116,17 @@ export default function MyPage() {
     return `Lv.4 ${catColor}`;
   };
 
+  const bookMarkLevel = () => {
+    if (bookMarkList.length < 3) {
+      return 1;
+    } else if (bookMarkList.length < 9) {
+      return 2;
+    } else if (bookMarkList.length < 15) {
+      return 3;
+    }
+    return 4;
+  };
+
   return (
     <div className={styles.container}>
       <CatSelectModal
@@ -173,6 +184,7 @@ export default function MyPage() {
                 }}
               >
                 <Avatar
+                  src={`./${catColor}${bookMarkLevel()}.webp`}
                   sx={{
                     backgroundColor: "third.main",
                     width: "50px",

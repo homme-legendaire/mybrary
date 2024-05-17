@@ -1,4 +1,4 @@
-import { Modal } from "@mui/material";
+import { Button, Modal } from "@mui/material";
 import { useState } from "react";
 import styles from "./CatSelectModal.module.css";
 import { useRecoilState } from "recoil";
@@ -8,29 +8,36 @@ export default function CatSelectModal({ open, onClose }) {
   const [catList, setCatList] = useState([
     {
       name: "치즈냥이",
-      img: "https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_960_720.jpg",
+      img: "./치즈냥이1.webp",
     },
     {
       name: "밤냥이",
-      img: "https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_960_720.jpg",
+      img: "./밤냥이1.webp",
     },
     {
       name: "삼색냥이",
-      img: "https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_960_720.jpg",
+      img: "./삼색냥이1.webp",
     },
     {
       name: "흰냥이",
-      img: "https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_960_720.jpg",
+      img: "./흰냥이1.webp",
     },
     {
       name: "검은냥이",
-      img: "https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_960_720.jpg",
+      img: "./검은냥이1.webp",
     },
   ]);
+  const [tempCat, setTempCat] = useState("");
   const [catColor, setCatColor] = useRecoilState(catColorState);
 
   return (
-    <Modal open={open} onClose={onClose} disableAutoFocus>
+    <Modal
+      open={open}
+      onClose={() => {
+        onClose();
+      }}
+      disableAutoFocus
+    >
       <div className={styles.modal}>
         <div className={styles.modalHeader}>
           <div className={styles.modalTitle}>책냥이 고르기</div>
@@ -42,10 +49,11 @@ export default function CatSelectModal({ open, onClose }) {
           {catList.map((cat, index) => (
             <div
               key={index}
-              className={styles.catItem}
+              className={
+                tempCat === cat.name ? styles.selectedCat : styles.catItem
+              }
               onClick={() => {
-                setCatColor(cat.name);
-                onClose();
+                setTempCat(cat.name);
               }}
             >
               <img src={cat.img} alt={cat.name} className={styles.catImg} />
@@ -53,6 +61,16 @@ export default function CatSelectModal({ open, onClose }) {
             </div>
           ))}
         </div>
+        {tempCat && (
+          <Button
+            onClick={() => {
+              setCatColor(tempCat);
+              onClose();
+            }}
+          >
+            선택
+          </Button>
+        )}
       </div>
     </Modal>
   );
