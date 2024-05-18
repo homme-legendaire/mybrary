@@ -25,20 +25,9 @@ export default function SelectedBookControlModal({ open, onClose }) {
 
   const [snsTooltipOpen, setSnsTooltipOpen] = useState(false);
 
-  // 책갈피 변수
-  const [bookMark, setBookMark] = useState({});
-
-  useEffect(() => {
-    let tempBook = {};
-    if (book?.image_path) {
-      tempBook = {
-        img: "/" + book?.image_path,
-        text: book?.memo,
-        memo: book?.my_think,
-      };
-    }
-    setBookMark(tempBook);
-  }, [book]);
+  // 책갈피 리스트 변수
+  const [isLoading, setIsLoading] = useState(false);
+  const [bookMarkList, setBookMarkList] = useState([]);
 
   // 책갈피 모달 변수
   const [bookMarkModalOpen, setBookMarkModalOpen] = useState(false);
@@ -51,8 +40,39 @@ export default function SelectedBookControlModal({ open, onClose }) {
   const [bookDeleteModalOpen, setBookDeleteModalOpen] = useState(false);
   const [savedBookList, setSavedBookList] = useRecoilState(userBookListState);
 
+  useEffect(() => {
+    console.log("BOOK", book);
+    // 북마크 리스트 불러오기 추가
+    fetchBookMarkList();
+  }, [book]);
+
   const bookMarkModalOpenHandler = (key) => {
     setBookMarkModalOpen(true);
+  };
+
+  const fetchBookMarkList = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/loadBookmark`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+          },
+          body: JSON.stringify({ book_id: book.book_id }),
+        }
+      );
+      const resJson = await res.json();
+      if (resJson.result === "success") {
+        setBookMarkList(resJson.bookmark);
+      } else {
+        alert("서버에서 오류가 발생했습니다.");
+      }
+    } catch (err) {
+      alert(`에러가 발생했습니다. ${err}`);
+    }
   };
 
   const bookDeleteHandler = async () => {
@@ -90,7 +110,8 @@ export default function SelectedBookControlModal({ open, onClose }) {
       <BookMarkModal
         open={bookMarkModalOpen}
         onClose={() => setBookMarkModalOpen(false)}
-        bookMark={bookMark}
+        // bookMark={bookMark}
+        bookMark={{}}
         control={true}
       />
       <BookMarkAddModal
@@ -156,15 +177,13 @@ export default function SelectedBookControlModal({ open, onClose }) {
               </div>
             </div>
             <div className={styles.bookActionBtn}>
-              {Object.keys(bookMark).length === 0 && (
-                <IconButton
-                  onClick={() => {
-                    setBookMarkAddModalOpen(true);
-                  }}
-                >
-                  <AddAPhoto />
-                </IconButton>
-              )}
+              <IconButton
+                onClick={() => {
+                  setBookMarkAddModalOpen(true);
+                }}
+              >
+                <AddAPhoto />
+              </IconButton>
               <WhiteTooltip
                 open={snsTooltipOpen}
                 title="공유하기"
@@ -192,7 +211,7 @@ export default function SelectedBookControlModal({ open, onClose }) {
                 {book.description}
               </span>
             </div>
-            <div className={styles.bookDescription}>
+            {/* <div className={styles.bookDescription}>
               <div className={styles.bookPartHeader}>
                 <span className={styles.partTitle}>책갈피</span>
                 <IconButton onClick={() => setBookMark({})}>
@@ -216,6 +235,25 @@ export default function SelectedBookControlModal({ open, onClose }) {
                     />
                   </div>
                 )}
+              </div>
+            </div> */}
+            <div className={styles.bookDescription}>
+              <span className={styles.partTitle}>책갈피</span>
+              <div className={styles.bookMarkList}>
+                {bookMarkList?.map((bookMark, index) => (
+                  <div
+                    key={index}
+                    className={styles.bookMark}
+                    onClick={() => bookMarkModalOpenHandler(index)}
+                  >
+                    <img
+                      src={bookMark.img}
+                      alt={bookMark.text}
+                      width={78}
+                      height={78}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
