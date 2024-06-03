@@ -101,3 +101,24 @@
   gap: 4px;
   width: 100%;
 }
+
+.bookMarkBtnContainer {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bookMarkBtn {
+  display: flex;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  background-color: #cfcfcf;
+}
+
+.snsShareDiv {
+  display: flex;
+  gap: 4px;
+}

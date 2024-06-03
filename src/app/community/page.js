@@ -1,7 +1,7 @@
 "use client";
 import Navigation from "@/components/Navigation";
 import styles from "./page.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   IconButton,
   Input,
@@ -94,6 +94,34 @@ export default function Community() {
       memo: book?.my_think,
     });
     setBookMarkModalOpen(true);
+  };
+
+  useEffect(() => {
+    fetchBookMarkList();
+  }, []);
+
+  const fetchBookMarkList = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/shareBook`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+          },
+        }
+      );
+      const resJson = await res.json();
+      console.log("커뮤니티 리스트", resJson);
+      if (resJson.result === "success") {
+        console.log(resJson.book_list);
+      } else {
+        alert("서버에서 오류가 발생했습니다.");
+      }
+    } catch (err) {
+      alert(`에러가 발생했습니다. ${err}`);
+    }
   };
 
   return (

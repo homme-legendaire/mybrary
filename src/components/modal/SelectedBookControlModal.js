@@ -35,6 +35,7 @@ export default function SelectedBookControlModal({ open, onClose }) {
   // 책갈피 추가 모달 변수
   const [bookMarkAddModalOpen, setBookMarkAddModalOpen] = useState(false);
   const [bookMarkAddModalText, setBookMarkAddModalText] = useState("");
+  const [bookMark, setBookMark] = useState({});
 
   // 책 삭제 모달 변수
   const [bookDeleteModalOpen, setBookDeleteModalOpen] = useState(false);
@@ -42,11 +43,14 @@ export default function SelectedBookControlModal({ open, onClose }) {
 
   useEffect(() => {
     console.log("BOOK", book);
-    // 북마크 리스트 불러오기 추가
-    fetchBookMarkList();
+    if (Object.keys(book).length > 0) {
+      // 북마크 리스트 불러오기 추가
+      fetchBookMarkList();
+    }
   }, [book]);
 
-  const bookMarkModalOpenHandler = (key) => {
+  const bookMarkModalOpenHandler = (bookMark) => {
+    setBookMark(bookMark);
     setBookMarkModalOpen(true);
   };
 
@@ -56,7 +60,7 @@ export default function SelectedBookControlModal({ open, onClose }) {
       const res = await fetch(
         `${process.env.PRODUCTION_SERVER_HOST}/loadBookmark`,
         {
-          method: "GET",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             token: parseCookies(null, "token").token,
@@ -66,7 +70,14 @@ export default function SelectedBookControlModal({ open, onClose }) {
       );
       const resJson = await res.json();
       if (resJson.result === "success") {
-        setBookMarkList(resJson.bookmark);
+        setBookMarkList(
+          resJson.bookmark_list?.map((bookmark) => {
+            return {
+              ...bookmark,
+              encoding_image: `data:image/png;base64,${bookmark.encoding_image}`,
+            };
+          })
+        );
       } else {
         alert("서버에서 오류가 발생했습니다.");
       }
@@ -110,8 +121,7 @@ export default function SelectedBookControlModal({ open, onClose }) {
       <BookMarkModal
         open={bookMarkModalOpen}
         onClose={() => setBookMarkModalOpen(false)}
-        // bookMark={bookMark}
-        bookMark={{}}
+        bookMark={bookMark}
         control={true}
       />
       <BookMarkAddModal
@@ -184,21 +194,6 @@ export default function SelectedBookControlModal({ open, onClose }) {
               >
                 <AddAPhoto />
               </IconButton>
-              <WhiteTooltip
-                open={snsTooltipOpen}
-                title="공유하기"
-                sx={{
-                  marginTop: "-36px !important",
-                }}
-              >
-                <IconButton
-                  onClick={() => {
-                    setSnsTooltipOpen(!snsTooltipOpen);
-                  }}
-                >
-                  <IosShare />
-                </IconButton>
-              </WhiteTooltip>
               <IconButton onClick={() => setBookDeleteModalOpen(true)}>
                 <Delete />
               </IconButton>
@@ -244,10 +239,10 @@ export default function SelectedBookControlModal({ open, onClose }) {
                   <div
                     key={index}
                     className={styles.bookMark}
-                    onClick={() => bookMarkModalOpenHandler(index)}
+                    onClick={() => bookMarkModalOpenHandler(bookMark)}
                   >
                     <img
-                      src={bookMark.img}
+                      src={bookMark.encoding_image}
                       alt={bookMark.text}
                       width={78}
                       height={78}

@@ -12,6 +12,7 @@ import { Avatar, Button, Tooltip } from "@mui/material";
 import UserBookDonutChart from "@/components/charts/UserBookDonutChart";
 import { useLayoutEffect, useState } from "react";
 import CatSelectModal from "@/components/modal/CatSelectModal";
+import { parseCookies } from "nookies";
 
 export default function MyPage() {
   const [userData, setUserData] = useRecoilState(userDataState);
@@ -263,6 +264,7 @@ export default function MyPage() {
             backgroundColor: "third.dark",
           },
         }}
+        // onClick={shareBookHandler}
       >
         SNS 공유하기
       </Button>

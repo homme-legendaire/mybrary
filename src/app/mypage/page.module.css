@@ -118,8 +118,7 @@
 .genreInfo {
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  margin-bottom: 24px;
+  padding: 8px;
   gap: 16px;
 }
 

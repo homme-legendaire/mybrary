@@ -1,6 +1,7 @@
 import { Button, Modal, TextField } from "@mui/material";
 import styles from "./BookMarkAddModal.module.css";
 import { useState } from "react";
+import { parseCookies } from "nookies";
 
 export default function BookMarkSelectModal({
   open,
@@ -9,11 +10,44 @@ export default function BookMarkSelectModal({
   onPicSelect,
 }) {
   const [selectedPic, setSelectedPic] = useState(null);
+  const [editedPic, setEditedPic] = useState(null);
   const [selected, setSelected] = useState(false);
+  const [sourcePrompt, setSourcePrompt] = useState("");
+  const [targetPrompt, setTargetPrompt] = useState("");
+  const [edited, setEdited] = useState(false);
 
   const picSelectHandler = () => {
     onPicSelect(selectedPic);
     onClose();
+  };
+
+  const editBookMarkHandler = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/editBookmark`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+            // bookmark:
+          },
+          body: JSON.stringify({
+            source_prompt: sourcePrompt,
+            target_prompt: targetPrompt,
+          }),
+        }
+      );
+      const resJson = await res.json();
+      if (resJson.result === "success") {
+        setEdited(true);
+        setEditedPic(`data:image/jpeg;base64,${resJson.bookmark}`);
+      } else {
+        alert("책갈피 수정에 실패했습니다.");
+      }
+    } catch (err) {
+      alert(`책갈피 수정 중 에러 발생. ${err}`);
+    }
   };
 
   return (
@@ -29,9 +63,11 @@ export default function BookMarkSelectModal({
         </div>
         <div className={styles.modalBody}>
           {selected ? (
-            <div className={styles.bookMarkListItem}>
+            edited ? (
+              <img src={editedPic} alt="diffusion" className={styles.img} />
+            ) : (
               <img src={selectedPic} alt="diffusion" className={styles.img} />
-            </div>
+            )
           ) : (
             <div className={styles.picList}>
               {picList.map((pic, idx) => (
@@ -61,51 +97,100 @@ export default function BookMarkSelectModal({
         <div className={styles.modalFooter}>
           {selected ? (
             <div className={styles.bookMarkEditDiv}>
-              <TextField
-                size="small"
-                placeholder="수정할 내용을 입력해주세요."
-              />
-              <div className={styles.bookMarkEditBtn}>
-                <Button
-                  fullWidth
-                  sx={{
-                    fontSize: "1.25rem",
-                    color: "rgba(0,0,0,0.87)",
-                    backgroundColor: "#f5f5f5",
-                    "&:hover": {
-                      backgroundColor: "#e0e0e0",
-                    },
-                    "&:disabled": {
-                      backgroundColor: "#b6b6b6",
-                    },
-                  }}
-                  disabled={!selectedPic}
-                  onClick={() => {
-                    // 수정 핸들러
-                  }}
-                >
-                  수정
-                </Button>
-                <Button
-                  fullWidth
-                  sx={{
-                    fontSize: "1.25rem",
-                    color: "#ffffff",
-                    backgroundColor: "primary.main",
-                    "&:hover": {
-                      backgroundColor: "primary.dark",
-                    },
-                    "&:disabled": {
-                      backgroundColor: "#b6b6b6",
-                    },
-                  }}
-                  disabled={!selectedPic}
-                  // 결정 및 저장 핸들러
-                  onClick={picSelectHandler}
-                >
-                  결정 및 저장
-                </Button>
-              </div>
+              {edited ? (
+                <div className={styles.bookMarkEditResult}>
+                  <span>
+                    <strong>바다</strong>을(를){" "}
+                    <strong>거북이가 있는 바다</strong>
+                    으로 바꿔드렸어요!
+                  </span>
+                  <Button
+                    fullWidth
+                    sx={{
+                      fontSize: "1.25rem",
+                      color: "#ffffff",
+                      backgroundColor: "primary.main",
+                      "&:hover": {
+                        backgroundColor: "primary.dark",
+                      },
+                      "&:disabled": {
+                        backgroundColor: "#b6b6b6",
+                      },
+                    }}
+                    disabled={!selectedPic}
+                    // 결정 및 저장 핸들러
+                    onClick={picSelectHandler}
+                  >
+                    결정 및 저장
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className={styles.editInputDiv}>
+                    <div className={styles.smallEditInputDiv}>
+                      <TextField
+                        size="small"
+                        placeholder="예) 장미"
+                        value={sourcePrompt}
+                        onChange={(e) => {
+                          setSourcePrompt(e.target.value);
+                        }}
+                      />
+                      <span>을(를)</span>
+                    </div>
+                    <div className={styles.smallEditInputDiv}>
+                      <TextField
+                        size="small"
+                        placeholder="예) 분홍색 장미"
+                        value={targetPrompt}
+                        onChange={(e) => {
+                          setTargetPrompt(e.target.value);
+                        }}
+                      />
+                      <span>으로 바꿔드릴게요.</span>
+                    </div>
+                  </div>
+                  <div className={styles.bookMarkEditBtn}>
+                    <Button
+                      fullWidth
+                      sx={{
+                        fontSize: "1.25rem",
+                        color: "rgba(0,0,0,0.87)",
+                        backgroundColor: "#f5f5f5",
+                        "&:hover": {
+                          backgroundColor: "#e0e0e0",
+                        },
+                        "&:disabled": {
+                          backgroundColor: "#b6b6b6",
+                        },
+                      }}
+                      disabled={!selectedPic}
+                      onClick={editBookMarkHandler}
+                    >
+                      수정
+                    </Button>
+                    <Button
+                      fullWidth
+                      sx={{
+                        fontSize: "1.25rem",
+                        color: "#ffffff",
+                        backgroundColor: "primary.main",
+                        "&:hover": {
+                          backgroundColor: "primary.dark",
+                        },
+                        "&:disabled": {
+                          backgroundColor: "#b6b6b6",
+                        },
+                      }}
+                      disabled={!selectedPic}
+                      // 결정 및 저장 핸들러
+                      onClick={picSelectHandler}
+                    >
+                      결정 및 저장
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <Button

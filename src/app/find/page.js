@@ -1,7 +1,14 @@
 "use client";
 import styles from "./page.module.css";
 import Navigation from "@/components/Navigation";
-import { Autocomplete, Button, Modal, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+} from "@mui/material";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { parseCookies } from "nookies";
@@ -14,7 +21,6 @@ import {
 import { useRecoilState, useRecoilValue } from "recoil";
 
 export default function Find() {
-  const [bookList, setBookList] = useState([]);
   const userData = useRecoilValue(userDataState);
   const userBookList = useRecoilValue(userBookListState);
   const [searched, setSearched] = useState(false);
@@ -107,29 +113,50 @@ export default function Find() {
     "스포츠",
   ];
 
+  const [recommendBookList, setRecommendBookList] = useState([]);
+
   const [firstKeyword, setFirstKeyword] = useState("");
   const [secondKeyword, setSecondKeyword] = useState("");
-  const [thirdKeyword, setThirdKeyword] = useState("");
+  const [thirdKeyword, setThirdKeyword] = useState([]);
 
   useLayoutEffect(() => {
     if (recommendationList?.length > 0) {
       setSearched(true);
     }
+    if (userBookList?.length > 0) {
+      fetchBookList();
+    }
   }, []);
 
-  // useEffect(() => {
-  //   if (userBookList.length > 0) {
-  //     setBookList(userData.bookList);
-  //   }
-  // }, [userData]);
-
-  console.log("SEARCHED", searched);
+  const fetchBookList = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/loadMyBook`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+          },
+        }
+      );
+      const resJson = await res.json();
+      console.log("커뮤니티 리스트", resJson);
+      if (resJson.result === "success") {
+        console.log(resJson.book_list);
+      } else {
+        alert("서버에서 오류가 발생했습니다.");
+      }
+    } catch (err) {
+      alert(`에러가 발생했습니다. ${err}`);
+    }
+  };
 
   const recommendationHandler = async () => {
     try {
       setFindLoading(true);
       const res = await fetch(
-        `${process.env.PRODUCTION_SERVER_HOST}/findRecommend`,
+        `${process.env.PRODUCTION_SERVER_HOST}/userAIchoice`,
         {
           method: "POST",
           headers: {
@@ -137,9 +164,8 @@ export default function Find() {
             token: parseCookies(null, "token").token,
           },
           body: JSON.stringify({
-            user_genre: firstKeyword,
-            user_mood: secondKeyword,
-            user_interest: thirdKeyword,
+            select_user_genre: "",
+            want_recommend: "",
           }),
         }
       );
@@ -160,12 +186,10 @@ export default function Find() {
         setFindLoading(false);
       } else {
         setFindLoading(false);
-
         alert("서버에서 오류가 발생했습니다.");
       }
     } catch (err) {
       setFindLoading(false);
-
       alert(`에러가 발생했습니다. ${err}`);
     }
   };
@@ -222,7 +246,7 @@ export default function Find() {
   const recommendationModalOpener = () => {
     setFirstKeyword("");
     setSecondKeyword("");
-    setThirdKeyword("");
+    setThirdKeyword([]);
     setNewBookRecommendationOpen(true);
   };
 
@@ -261,14 +285,49 @@ export default function Find() {
             </div>
             <div className={styles.modalInput}>
               <span>어떤 주제의 책을 찾으세요?</span>
-              <Autocomplete
+              <Select
+                fullWidth
+                multiple
+                variant="standard"
                 value={thirdKeyword}
-                onChange={(e, value) => setThirdKeyword(value)}
+                onChange={(e) => {
+                  setThirdKeyword(
+                    typeof e.target.value === "string"
+                      ? e.target.value.split(", ")
+                      : e.target.value
+                  );
+                }}
+                displayEmpty
+              >
+                {keywordList3?.map((item, idx) => {
+                  return (
+                    <MenuItem key={idx} value={item}>
+                      {item}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+
+              {/* <Autocomplete
+                // multiple
+                value={thirdKeyword}
+                // onChange={(e, value) => setThirdKeyword(value)}
+                onChange={(e, value) => console.log(value)}
                 options={keywordList3}
+                // renderInput={(params) => (
+                //   <TextField fullWidth {...params} variant="standard" />
+                // )}
                 renderInput={(params) => (
-                  <TextField fullWidth {...params} variant="standard" />
+                  <Select
+                    fullWidth
+                    {...params}
+                    variant="standard"
+                    multiple
+                    value={thirdKeyword}
+                    onChange={(e) => setThirdKeyword(e.target.value)}
+                  />
                 )}
-              />
+              /> */}
             </div>
           </div>
           <div className={styles.modalBtnContainer}>
@@ -303,7 +362,7 @@ export default function Find() {
           </div>
         </div>
       </Modal>
-      {bookList?.length > 0 ? (
+      {userBookList?.length > 0 ? (
         <>
           {searched ? (
             <div className={styles.recommendationContainer}>

@@ -63,12 +63,21 @@ export default function CatSelectModal({ open, onClose }) {
         </div>
         {tempCat && (
           <Button
+            sx={{
+              fontSize: "1.25rem",
+              color: "#ffffff",
+              backgroundColor: "primary.main",
+              "&:hover": {
+                backgroundColor: "primary.dark",
+              },
+            }}
             onClick={() => {
+              catSaveHandler();
               setCatColor(tempCat);
               onClose();
             }}
           >
-            선택
+            고양이 선택
           </Button>
         )}
       </div>
