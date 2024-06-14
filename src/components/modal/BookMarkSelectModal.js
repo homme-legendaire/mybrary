@@ -2,6 +2,7 @@ import { Button, Modal, TextField } from "@mui/material";
 import styles from "./BookMarkAddModal.module.css";
 import { useState } from "react";
 import { parseCookies } from "nookies";
+import { CircleLoader } from "react-spinners";
 
 export default function BookMarkSelectModal({
   open,
@@ -15,14 +16,16 @@ export default function BookMarkSelectModal({
   const [sourcePrompt, setSourcePrompt] = useState("");
   const [targetPrompt, setTargetPrompt] = useState("");
   const [edited, setEdited] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   const picSelectHandler = () => {
-    onPicSelect(selectedPic);
+    // onPicSelect(selectedPic);
     onClose();
   };
 
   const editBookMarkHandler = async () => {
     try {
+      setEditLoading(true);
       const res = await fetch(
         `${process.env.PRODUCTION_SERVER_HOST}/editBookmark`,
         {
@@ -30,11 +33,11 @@ export default function BookMarkSelectModal({
           headers: {
             "Content-Type": "application/json",
             token: parseCookies(null, "token").token,
-            // bookmark:
           },
           body: JSON.stringify({
             source_prompt: sourcePrompt,
             target_prompt: targetPrompt,
+            image_path: selectedPic.image_path,
           }),
         }
       );
@@ -42,6 +45,11 @@ export default function BookMarkSelectModal({
       if (resJson.result === "success") {
         setEdited(true);
         setEditedPic(`data:image/jpeg;base64,${resJson.bookmark}`);
+        onPicSelect({
+          image_src: `data:image/jpeg;base64,${resJson.bookmark}`,
+          image_path: "tmp3.png",
+        });
+        setEditLoading(false);
       } else {
         alert("책갈피 수정에 실패했습니다.");
       }
@@ -66,7 +74,11 @@ export default function BookMarkSelectModal({
             edited ? (
               <img src={editedPic} alt="diffusion" className={styles.img} />
             ) : (
-              <img src={selectedPic} alt="diffusion" className={styles.img} />
+              <img
+                src={selectedPic.image_src}
+                alt="diffusion"
+                className={styles.img}
+              />
             )
           ) : (
             <div className={styles.picList}>
@@ -74,14 +86,14 @@ export default function BookMarkSelectModal({
                 <div
                   key={idx}
                   className={
-                    pic === selectedPic
+                    pic.image_src === selectedPic?.image_src
                       ? styles.selectedBookMarkListItem
                       : styles.bookMarkListItem
                   }
                 >
                   <img
                     key={idx}
-                    src={pic}
+                    src={pic.image_src}
                     alt="diffusion"
                     className={styles.img}
                     onClick={() => {
@@ -100,9 +112,8 @@ export default function BookMarkSelectModal({
               {edited ? (
                 <div className={styles.bookMarkEditResult}>
                   <span>
-                    <strong>바다</strong>을(를){" "}
-                    <strong>거북이가 있는 바다</strong>
-                    으로 바꿔드렸어요!
+                    <strong>바위 위에 서 있는 어린왕자</strong>을(를){" "}
+                    <strong>장미와 함께 있는 어린왕자</strong>로 바꿔드렸어요!
                   </span>
                   <Button
                     fullWidth
@@ -126,30 +137,37 @@ export default function BookMarkSelectModal({
                 </div>
               ) : (
                 <>
-                  <div className={styles.editInputDiv}>
-                    <div className={styles.smallEditInputDiv}>
-                      <TextField
-                        size="small"
-                        placeholder="예) 장미"
-                        value={sourcePrompt}
-                        onChange={(e) => {
-                          setSourcePrompt(e.target.value);
-                        }}
-                      />
-                      <span>을(를)</span>
+                  {editLoading ? (
+                    <div className={styles.loaderDiv}>
+                      <CircleLoader color="#7c3f34" loading size={150} />
                     </div>
-                    <div className={styles.smallEditInputDiv}>
-                      <TextField
-                        size="small"
-                        placeholder="예) 분홍색 장미"
-                        value={targetPrompt}
-                        onChange={(e) => {
-                          setTargetPrompt(e.target.value);
-                        }}
-                      />
-                      <span>으로 바꿔드릴게요.</span>
+                  ) : (
+                    <div className={styles.editInputDiv}>
+                      <div className={styles.smallEditInputDiv}>
+                        <TextField
+                          size="small"
+                          placeholder="예) 장미"
+                          value={sourcePrompt}
+                          onChange={(e) => {
+                            setSourcePrompt(e.target.value);
+                          }}
+                        />
+                        <span>을(를)</span>
+                      </div>
+                      <div className={styles.smallEditInputDiv}>
+                        <TextField
+                          size="small"
+                          placeholder="예) 분홍색 장미"
+                          value={targetPrompt}
+                          onChange={(e) => {
+                            setTargetPrompt(e.target.value);
+                          }}
+                        />
+                        <span>으로 바꿔드릴게요.</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
+
                   <div className={styles.bookMarkEditBtn}>
                     <Button
                       fullWidth
@@ -167,7 +185,7 @@ export default function BookMarkSelectModal({
                       disabled={!selectedPic}
                       onClick={editBookMarkHandler}
                     >
-                      수정
+                      {editLoading ? "수정 중..." : "수정"}
                     </Button>
                     <Button
                       fullWidth

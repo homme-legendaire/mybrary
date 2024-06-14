@@ -1,10 +1,12 @@
 import { Modal, IconButton, Avatar } from "@mui/material";
 import styles from "./BookMarkModal.module.css";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { IosShare, ThumbDown, ThumbUp } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
+import { parseCookies } from "nookies";
+import { userDataState } from "../recoil/atom";
 
 const WhiteTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -21,9 +23,15 @@ export default function BookMarkModal({ open, onClose, bookMark, control }) {
   const [bookMarkMemoClicked, setBookMarkMemoClicked] = useState(false);
   const [bookMarkMemo, setBookMarkMemo] = useState("");
 
+  const userData = useRecoilValue(userDataState);
+  const [like, setLike] = useState(bookMark.like);
+  const [dislike, setDislike] = useState(bookMark.dislike);
+
   const [snsTooltipOpen, setSnsTooltipOpen] = useState(false);
 
   useEffect(() => {
+    setLike(bookMark.like);
+    setDislike(bookMark.dislike);
     setBookMarkMemo(bookMark.my_think);
   }, [bookMark]);
 
@@ -42,6 +50,65 @@ export default function BookMarkModal({ open, onClose, bookMark, control }) {
     e.stopPropagation();
   };
 
+  const likeBookMarkHandler = async (type) => {
+    console.log(bookMark.id);
+    if (type === "like") {
+      if (bookMark.dislikeUser?.includes(userData.id)) {
+        alert("이미 싫어요를 누르셨습니다.");
+        return;
+      }
+      if (bookMark.likeUser?.includes(userData.id)) {
+        setLike(like - 1);
+        bookMark.likeUser = bookMark.likeUser.filter(
+          (id) => id !== userData.id
+        );
+        return;
+      } else {
+        setLike(like + 1);
+        bookMark.likeUser.push(userData.id);
+      }
+    } else {
+      if (bookMark.likeUser?.includes(userData.id)) {
+        alert("이미 좋아요를 누르셨습니다.");
+        return;
+      }
+      if (bookMark.dislikeUser?.includes(userData.id)) {
+        setDislike(dislike - 1);
+        bookMark.dislikeUser = bookMark.dislikeUser.filter(
+          (id) => id !== userData.id
+        );
+        return;
+      } else {
+        setDislike(dislike + 1);
+        bookMark.dislikeUser.push(userData.id);
+      }
+    }
+    try {
+      const res = await fetch(
+        `${process.env.PRODUCTION_SERVER_HOST}/likeBookmark`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: parseCookies(null, "token").token,
+            bookmark: bookMark.bookmark_id,
+          },
+          body: JSON.stringify({
+            like: type === "like",
+            dislike: type === "dislike",
+          }),
+        }
+      );
+      const resJson = await res.json();
+      if (resJson.result === "success") {
+      } else {
+        alert("좋아요/싫어요 에러 발생");
+      }
+    } catch (err) {
+      alert(`좋아요/싫어요 에러 발생 ${err}`);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose} disableAutoFocus>
       <div className={styles.modal}>
@@ -53,7 +120,7 @@ export default function BookMarkModal({ open, onClose, bookMark, control }) {
         >
           <div className={styles.frontSide}>
             <img
-              src={bookMark.encoding_image}
+              src={bookMark.image_path}
               alt={bookMark.memo}
               width={268}
               height={368}
@@ -65,9 +132,9 @@ export default function BookMarkModal({ open, onClose, bookMark, control }) {
                     open={snsTooltipOpen}
                     title={
                       <div className={styles.snsShareDiv}>
-                        <span>공유하기</span>
-                        <span>공유하기</span>
-                        <span>공유하기</span>
+                        <img src="카카오톡로고.png" width={36} height={36} />
+                        <img src="인스타그램로고.png" width={36} height={36} />
+                        <img src="더보기.png" width={36} height={36} />
                       </div>
                     }
                     sx={{
@@ -117,19 +184,36 @@ export default function BookMarkModal({ open, onClose, bookMark, control }) {
                   <div className={styles.bookMarkBtn}>
                     <IconButton
                       sx={{
+                        color:
+                          bookMark.likeUser?.includes(userData.id) && "skyblue",
                         width: "50%",
                       }}
                       disabled={control}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        likeBookMarkHandler("like");
+                      }}
                     >
                       <ThumbUp />
                     </IconButton>
-                    <span>{bookMark.like}</span>
+                    <span>{like}</span>
                   </div>
                   <div className={styles.bookMarkBtn}>
-                    <IconButton disabled={control}>
+                    <IconButton
+                      sx={{
+                        color:
+                          bookMark.dislikeUser?.includes(userData.id) &&
+                          "skyblue",
+                      }}
+                      disabled={control}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        likeBookMarkHandler("dislike");
+                      }}
+                    >
                       <ThumbDown />
                     </IconButton>
-                    <span>{bookMark.dislike}</span>
+                    <span>{dislike}</span>
                   </div>
                 </div>
               </div>
@@ -137,7 +221,7 @@ export default function BookMarkModal({ open, onClose, bookMark, control }) {
           </div>
           <div className={styles.backSide}>
             <img
-              src={bookMark.encoding_image}
+              src={bookMark.image_path}
               alt={bookMark.memo}
               width={268}
               height={368}

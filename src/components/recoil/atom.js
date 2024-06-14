@@ -34,6 +34,11 @@ export const userBookMarkListState = atom({
   ],
 });
 
+export const bookMarkListState = atom({
+  key: "bookMarkListState",
+  default: [],
+});
+
 export const catColorState = atom({
   key: "catColorState",
   default: "",
@@ -49,7 +54,22 @@ export const recommendationListState = atom({
   default: [],
 });
 
+export const recommendationList2State = atom({
+  key: "recommendationList2State",
+  default: [],
+});
+
 export const recommendationState = atom({
   key: "recommendationState",
+  default: [],
+});
+
+export const instagramState = atom({
+  key: "instagramState",
+  default: {},
+});
+
+export const communityListState = atom({
+  key: "communityListState",
   default: [],
 });

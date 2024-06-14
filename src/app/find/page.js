@@ -7,6 +7,8 @@ import {
   MenuItem,
   Modal,
   Select,
+  Tab,
+  Tabs,
   TextField,
 } from "@mui/material";
 import Link from "next/link";
@@ -14,6 +16,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { parseCookies } from "nookies";
 import {
   recommendationListState,
+  recommendationList2State,
   recommendationState,
   userBookListState,
   userDataState,
@@ -29,6 +32,10 @@ export default function Find() {
   const [recommendationList, setRecommendationList] = useRecoilState(
     recommendationListState
   );
+  const [recommendationList2, setRecommendationList2] = useRecoilState(
+    recommendationList2State
+  );
+
   const [selectedBook, setSelectedBook] = useState({});
   const [findLoading, setFindLoading] = useState(false);
 
@@ -113,11 +120,17 @@ export default function Find() {
     "스포츠",
   ];
 
-  const [recommendBookList, setRecommendBookList] = useState([]);
-
   const [firstKeyword, setFirstKeyword] = useState("");
   const [secondKeyword, setSecondKeyword] = useState("");
   const [thirdKeyword, setThirdKeyword] = useState([]);
+
+  // 독서기록 기반 추천
+  const [myBookList, setMyBookList] = useState({});
+  const [myBookModalOpen, setMyBookModalOpen] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [selectedBookList, setSelectedBookList] = useState([]);
+
+  const [showTab, setShowTab] = useState(0);
 
   useLayoutEffect(() => {
     if (recommendationList?.length > 0) {
@@ -127,6 +140,14 @@ export default function Find() {
       fetchBookList();
     }
   }, []);
+
+  console.log(myBookList);
+  console.log(myBookList[Object.keys(myBookList)]);
+
+  const handleChange = (event, newValue) => {
+    setSelectedBook({});
+    setShowTab(newValue);
+  };
 
   const fetchBookList = async () => {
     try {
@@ -143,7 +164,8 @@ export default function Find() {
       const resJson = await res.json();
       console.log("커뮤니티 리스트", resJson);
       if (resJson.result === "success") {
-        console.log(resJson.book_list);
+        setMyBookList(resJson.book_list);
+        // setMyBookCategory(Object.keys(resJson.book_list));
       } else {
         alert("서버에서 오류가 발생했습니다.");
       }
@@ -152,8 +174,13 @@ export default function Find() {
     }
   };
 
+  const myBookModalOpener = () => {
+    setMyBookModalOpen(true);
+  };
+
   const recommendationHandler = async () => {
     try {
+      setMyBookModalOpen(false);
       setFindLoading(true);
       const res = await fetch(
         `${process.env.PRODUCTION_SERVER_HOST}/userAIchoice`,
@@ -164,7 +191,7 @@ export default function Find() {
             token: parseCookies(null, "token").token,
           },
           body: JSON.stringify({
-            select_user_genre: "",
+            select_user_genre: selectedGenre,
             want_recommend: "",
           }),
         }
@@ -178,8 +205,15 @@ export default function Find() {
             author: book.author.split("(")[0],
           };
         });
+        const tempBookList2 = resJson.similar_books.map((book) => {
+          return {
+            ...book,
+            author: book.author.split("(")[0],
+          };
+        });
 
         setRecommendationList(tempBookList);
+        setRecommendationList2(tempBookList2);
         setSearched(true);
         setFindLoading(false);
       } else if (resJson.result === "empty") {
@@ -225,8 +259,15 @@ export default function Find() {
             author: book.author.split("(")[0],
           };
         });
+        const tempBookList2 = resJson.similar_books.map((book) => {
+          return {
+            ...book,
+            author: book.author.split("(")[0],
+          };
+        });
 
         setRecommendationList(tempBookList);
+        setRecommendationList2(tempBookList2);
         setSearched(true);
         setFindLoading(false);
       } else if (resJson.result === "empty") {
@@ -263,29 +304,32 @@ export default function Find() {
           <div className={styles.modalBody}>
             <div className={styles.modalInput}>
               <span>어떤 분야의 책을 찾으세요?</span>
-              <Autocomplete
+              <TextField
+                fullWidth
+                variant="standard"
                 value={firstKeyword}
-                onChange={(e, value) => setFirstKeyword(value)}
-                options={keywordList1}
-                renderInput={(params) => (
-                  <TextField fullWidth {...params} variant="standard" />
-                )}
+                onChange={(e) => setFirstKeyword(e.target.value)}
               />
             </div>
             <div className={styles.modalInput}>
               <span>어떤 감정을 담은 책을 찾으세요?</span>
-              <Autocomplete
+              <TextField
+                fullWidth
+                variant="standard"
                 value={secondKeyword}
-                onChange={(e, value) => setSecondKeyword(value)}
-                options={keywordList2}
-                renderInput={(params) => (
-                  <TextField fullWidth {...params} variant="standard" />
-                )}
+                onChange={(e) => setSecondKeyword(e.target.value)}
               />
             </div>
             <div className={styles.modalInput}>
               <span>어떤 주제의 책을 찾으세요?</span>
-              <Select
+              <TextField
+                fullWidth
+                variant="standard"
+                value={thirdKeyword}
+                onChange={(e) => setThirdKeyword(e.target.value)}
+              />
+
+              {/* <Select
                 fullWidth
                 multiple
                 variant="standard"
@@ -306,7 +350,7 @@ export default function Find() {
                     </MenuItem>
                   );
                 })}
-              </Select>
+              </Select> */}
 
               {/* <Autocomplete
                 // multiple
@@ -362,6 +406,100 @@ export default function Find() {
           </div>
         </div>
       </Modal>
+      <Modal
+        open={myBookModalOpen}
+        onClose={() => setMyBookModalOpen(false)}
+        disableAutoFocus
+      >
+        <div className={styles.modal}>
+          <div className={styles.modalHeader}>
+            <span className={styles.modalTitle}>도서 선택</span>
+            <span className={styles.modalSubTitle}>
+              정확한 도서 추천을 위해 도서를 선택해주세요.
+            </span>
+          </div>
+          <div className={styles.modalBody}>
+            <div className={styles.modalInput}>
+              <span>어떤 장르의 책을 추천해 드릴까요?</span>
+              <Select
+                variant="standard"
+                size="small"
+                value={selectedGenre}
+                onChange={(e) => setSelectedGenre(e.target.value)}
+              >
+                {Object.keys(myBookList).map((genre, idx) => (
+                  <MenuItem key={idx} value={genre}>
+                    {genre}
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
+            {selectedGenre && (
+              <div className={styles.bookListDiv}>
+                {myBookList[selectedGenre].map((book, idx) => (
+                  <div key={idx} className={styles.bookDiv}>
+                    <img
+                      className={
+                        selectedBookList.includes(book) && styles.selectedBook
+                      }
+                      src={book.image}
+                      width={105}
+                      height={136}
+                      onClick={() => {
+                        if (selectedBookList.includes(book)) {
+                          setSelectedBookList((prevList) =>
+                            prevList.filter((item) => item !== book)
+                          );
+                          return;
+                        } else {
+                          setSelectedBookList((prevList) => [
+                            ...new Set([...prevList, book]),
+                          ]);
+                        }
+                      }}
+                    />
+                    <span>
+                      {book.title?.length > 8
+                        ? book.title.slice(0, 8) + "..."
+                        : book.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className={styles.modalBtnDiv}>
+            <Button
+              fullWidth
+              sx={{
+                fontSize: "1.25rem",
+                color: "#ffffff",
+                backgroundColor: "primary.main",
+                "&:hover": {
+                  backgroundColor: "primary.dark",
+                },
+              }}
+              onClick={recommendationHandler}
+            >
+              추천 받기
+            </Button>
+            <Button
+              fullWidth
+              sx={{
+                fontSize: "1.25rem",
+                color: "#ffffff",
+                backgroundColor: "#222849",
+                "&:hover": {
+                  backgroundColor: "#272200",
+                },
+              }}
+              onClick={() => setMyBookModalOpen(false)}
+            >
+              닫기
+            </Button>
+          </div>
+        </div>
+      </Modal>
       {userBookList?.length > 0 ? (
         <>
           {searched ? (
@@ -369,24 +507,77 @@ export default function Find() {
               <div className={styles.title}>
                 <span>나만의 도서 추천</span>
               </div>
-              <div className={styles.bookCover}>
-                {recommendationList?.map((book, index) => (
-                  <div key={index} className={styles.book}>
-                    <img
-                      className={
-                        selectedBook?.isbn === book?.isbn
-                          ? styles.bookCoverSelected
-                          : styles.bookCoverImg
-                      }
-                      src={book?.cover}
-                      alt={book?.title}
-                      width={105}
-                      height={136}
-                      onClick={() => setSelectedBook(book)}
-                    />
-                  </div>
-                ))}
-              </div>
+              <Tabs
+                value={showTab}
+                onChange={handleChange}
+                sx={{
+                  display: "flex",
+                  alignContent: "center",
+                  "& .MuiTabs-indicator": {
+                    backgroundColor: "secondary.main",
+                  },
+                }}
+              >
+                <Tab
+                  label="순위 높은 순"
+                  sx={{
+                    color: "#5A5A5A",
+                    "&.Mui-selected": {
+                      color: "secondary.main",
+                    },
+                  }}
+                />
+                <Tab
+                  label="유사도 높은 순"
+                  sx={{
+                    color: "#5A5A5A",
+                    "&.Mui-selected": {
+                      color: "secondary.main",
+                    },
+                  }}
+                />
+              </Tabs>
+              {showTab === 0 && (
+                <div className={styles.bookCover}>
+                  {recommendationList?.map((book, index) => (
+                    <div key={index} className={styles.book}>
+                      <img
+                        className={
+                          selectedBook?.isbn === book?.isbn
+                            ? styles.bookCoverSelected
+                            : styles.bookCoverImg
+                        }
+                        src={book?.cover}
+                        alt={book?.title}
+                        width={105}
+                        height={136}
+                        onClick={() => setSelectedBook(book)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {showTab === 1 && (
+                <div className={styles.bookCover}>
+                  {recommendationList2?.map((book, index) => (
+                    <div key={index} className={styles.book}>
+                      <img
+                        className={
+                          selectedBook?.isbn === book?.isbn
+                            ? styles.bookCoverSelected
+                            : styles.bookCoverImg
+                        }
+                        src={book?.cover}
+                        alt={book?.title}
+                        width={105}
+                        height={136}
+                        onClick={() => setSelectedBook(book)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {Object.keys(selectedBook).length > 0 && (
                 <>
                   <div className={styles.bookTitleContainer}>
@@ -499,7 +690,9 @@ export default function Find() {
                     backgroundColor: "third.dark",
                   },
                 }}
-                onClick={recommendationHandler}
+                onClick={() => {
+                  myBookModalOpener();
+                }}
               >
                 독서기록 기반 추천 받기
               </Button>
@@ -513,24 +706,76 @@ export default function Find() {
               <div className={styles.title}>
                 <span>나만의 도서 추천</span>
               </div>
-              <div className={styles.bookCover}>
-                {recommendationList?.map((book, index) => (
-                  <div key={index} className={styles.book}>
-                    <img
-                      className={
-                        selectedBook?.isbn === book?.isbn
-                          ? styles.bookCoverSelected
-                          : styles.bookCoverImg
-                      }
-                      src={book?.cover}
-                      alt={book?.title}
-                      width={105}
-                      height={136}
-                      onClick={() => setSelectedBook(book)}
-                    />
-                  </div>
-                ))}
-              </div>
+              <Tabs
+                value={showTab}
+                onChange={handleChange}
+                sx={{
+                  display: "flex",
+                  alignContent: "center",
+                  "& .MuiTabs-indicator": {
+                    backgroundColor: "secondary.main",
+                  },
+                }}
+              >
+                <Tab
+                  label="순위 높은 순"
+                  sx={{
+                    color: "#5A5A5A",
+                    "&.Mui-selected": {
+                      color: "secondary.main",
+                    },
+                  }}
+                />
+                <Tab
+                  label="유사도 높은 순"
+                  sx={{
+                    color: "#5A5A5A",
+                    "&.Mui-selected": {
+                      color: "secondary.main",
+                    },
+                  }}
+                />
+              </Tabs>
+              {showTab === 0 && (
+                <div className={styles.bookCover}>
+                  {recommendationList?.map((book, index) => (
+                    <div key={index} className={styles.book}>
+                      <img
+                        className={
+                          selectedBook?.isbn === book?.isbn
+                            ? styles.bookCoverSelected
+                            : styles.bookCoverImg
+                        }
+                        src={book?.cover}
+                        alt={book?.title}
+                        width={105}
+                        height={136}
+                        onClick={() => setSelectedBook(book)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {showTab === 1 && (
+                <div className={styles.bookCover}>
+                  {recommendationList2?.map((book, index) => (
+                    <div key={index} className={styles.book}>
+                      <img
+                        className={
+                          selectedBook?.isbn === book?.isbn
+                            ? styles.bookCoverSelected
+                            : styles.bookCoverImg
+                        }
+                        src={book?.cover}
+                        alt={book?.title}
+                        width={105}
+                        height={136}
+                        onClick={() => setSelectedBook(book)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
               {Object.keys(selectedBook).length > 0 && (
                 <>
                   <div className={styles.bookTitleContainer}>

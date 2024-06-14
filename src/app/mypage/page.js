@@ -147,7 +147,7 @@ export default function MyPage() {
         <div className={styles.userInfo}>
           <div className={styles.infoContainer}>
             <span>닉네임</span>
-            <span className={styles.infoLabel}>{userData?.name}</span>
+            <span className={styles.infoLabel}>마이브러리</span>
           </div>
           <div className={styles.infoContainer}>
             <span>레벨</span>
@@ -157,9 +157,7 @@ export default function MyPage() {
           </div>
           <div className={styles.infoContainer}>
             <span>가입일</span>
-            <span className={styles.infoLabel}>
-              {userData?.createdAt?.split("T")[0]}
-            </span>
+            <span className={styles.infoLabel}>2024-04-30</span>
           </div>
         </div>
       </div>
@@ -253,7 +251,7 @@ export default function MyPage() {
           </>
         )}
       </div>
-
+      {/* 
       <Button
         fullWidth
         sx={{
@@ -267,7 +265,7 @@ export default function MyPage() {
         // onClick={shareBookHandler}
       >
         SNS 공유하기
-      </Button>
+      </Button> */}
       <Navigation value={4} />
     </div>
   );

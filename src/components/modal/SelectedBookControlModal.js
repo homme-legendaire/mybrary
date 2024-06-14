@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 import BookMarkModal from "./BookMarkModal";
 import BookMarkAddModal from "./BookMarkAddModal";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { selectedBookState, userBookListState } from "../recoil/atom";
+import {
+  bookMarkListState,
+  selectedBookState,
+  userBookListState,
+} from "../recoil/atom";
 import { parseCookies } from "nookies";
 import { styled } from "@mui/material/styles";
 import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
@@ -27,7 +31,9 @@ export default function SelectedBookControlModal({ open, onClose }) {
 
   // 책갈피 리스트 변수
   const [isLoading, setIsLoading] = useState(false);
-  const [bookMarkList, setBookMarkList] = useState([]);
+  const [bookMarkList, setBookMarkList] = useRecoilState(bookMarkListState);
+
+  console.log("bookMarkList", bookMarkList);
 
   // 책갈피 모달 변수
   const [bookMarkModalOpen, setBookMarkModalOpen] = useState(false);
@@ -42,9 +48,8 @@ export default function SelectedBookControlModal({ open, onClose }) {
   const [savedBookList, setSavedBookList] = useRecoilState(userBookListState);
 
   useEffect(() => {
-    console.log("BOOK", book);
     if (Object.keys(book).length > 0) {
-      // 북마크 리스트 불러오기 추가
+      // 북마크 리스트 불러오기
       fetchBookMarkList();
     }
   }, [book]);
@@ -79,10 +84,10 @@ export default function SelectedBookControlModal({ open, onClose }) {
           })
         );
       } else {
-        alert("서버에서 오류가 발생했습니다.");
+        // alert("서버에서 오류가 발생했습니다.");
       }
     } catch (err) {
-      alert(`에러가 발생했습니다. ${err}`);
+      // alert(`에러가 발생했습니다. ${err}`);
     }
   };
 
@@ -133,7 +138,10 @@ export default function SelectedBookControlModal({ open, onClose }) {
         onClose={() => setBookDeleteModalOpen(false)}
       >
         <div className={styles.smallModal}>
-          <span className={styles.title}>책을 삭제하시겠습니까?</span>
+          <div className={styles.title}>
+            <div className={styles.titleBold}>책을 삭제하시겠습니까?</div>
+            <div>책갈피 및 책 정보가 모두 삭제됩니다.</div>
+          </div>
           <div className={styles.modalBtn}>
             <Button
               fullWidth
@@ -168,13 +176,20 @@ export default function SelectedBookControlModal({ open, onClose }) {
           </div>
         </div>
       </Modal>
-      <Modal open={open} onClose={onClose} disableAutoFocus>
+      <Modal
+        open={open}
+        onClose={() => {
+          setBookMarkList([]);
+          onClose();
+        }}
+        disableAutoFocus
+      >
         <div className={styles.modal}>
           <div className={styles.modalHeader}>
             <div className={styles.bookInfo}>
               <img src={book.image} alt={book.title} width={60} height={78} />
               <div className={styles.bookTitle}>
-                <span className={styles.title}>
+                <span className={styles.titleBold}>
                   {book.title?.length > 15
                     ? book.title.slice(0, 15) + ".."
                     : book.title}
@@ -242,7 +257,7 @@ export default function SelectedBookControlModal({ open, onClose }) {
                     onClick={() => bookMarkModalOpenHandler(bookMark)}
                   >
                     <img
-                      src={bookMark.encoding_image}
+                      src={bookMark.image_path}
                       alt={bookMark.text}
                       width={78}
                       height={78}

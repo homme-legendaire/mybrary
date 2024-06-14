@@ -2,6 +2,7 @@ import { Modal, IconButton, Button, TextField } from "@mui/material";
 import styles from "./BookMarkAddModal.module.css";
 import { useEffect, useState } from "react";
 import {
+  bookMarkListState,
   bookMarkState,
   selectedBookState,
   userBookListState,
@@ -12,7 +13,7 @@ import { CircleLoader } from "react-spinners";
 import BookMarkSelectModal from "./BookMarkSelectModal";
 export default function BookMarkAddModal({ open, onClose }) {
   const [prompt, setPrompt] = useState("");
-  const [imageUrl, setImageUrl] = useState([]);
+  const [imageUrl, setImageUrl] = useState({});
   const [memo, setMemo] = useState("");
   const [bookMarkLoading, setBookMarkLoading] = useState(false);
   const [bookList, setBookList] = useRecoilState(userBookListState);
@@ -22,6 +23,8 @@ export default function BookMarkAddModal({ open, onClose }) {
   const [bookMarkPicList, setBookMarkPicList] = useState([]);
 
   const [book, setBook] = useRecoilState(selectedBookState);
+
+  const [bookMarkList, setBookMarkList] = useRecoilState(bookMarkListState);
 
   const addHandler = async () => {
     try {
@@ -52,7 +55,10 @@ export default function BookMarkAddModal({ open, onClose }) {
       if (resJson.status === "success") {
         setBookMarkPicList(
           resJson.image_list?.map((item) => {
-            return `data:image/jpeg;base64,${item.image_data}`;
+            return {
+              image_src: `data:image/jpeg;base64,${item.image_data}`,
+              image_path: item.image_name,
+            };
           })
         );
         setBookMarkLoading(false);
@@ -94,12 +100,22 @@ export default function BookMarkAddModal({ open, onClose }) {
             book_id: book.book_id,
             memo: prompt,
             my_think: memo,
-            image_path: imageUrl,
+            image_path: imageUrl.image_path,
           }),
         }
       );
       const resJson = await res.json();
       console.log("추가 완료", resJson);
+      setBookMarkList([
+        ...bookMarkList,
+        {
+          book_id: book.book_id,
+          memo: prompt,
+          my_think: memo,
+          image_path: imageUrl.image_path,
+        },
+      ]);
+
       onClose();
     } catch (err) {
       alert(`에러가 발생했습니다. ${err}`);
@@ -138,10 +154,10 @@ export default function BookMarkAddModal({ open, onClose }) {
               <span>잠시만 기다려주세요...</span>
             </div>
           )}
-          {imageUrl?.length > 0 && (
+          {Object.keys(imageUrl).length > 0 && (
             <img
               className={styles.image}
-              src={imageUrl}
+              src={imageUrl.image_src}
               width={200}
               height={200}
               alt="diffusionResult"

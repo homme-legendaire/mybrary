@@ -122,3 +122,8 @@
   justify-content: center;
   gap: 16px;
 }
+
+.loaderDiv {
+  display: flex;
+  justify-content: center;
+}

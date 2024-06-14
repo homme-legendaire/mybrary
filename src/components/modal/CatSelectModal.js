@@ -72,7 +72,7 @@ export default function CatSelectModal({ open, onClose }) {
               },
             }}
             onClick={() => {
-              catSaveHandler();
+              // catSaveHandler();
               setCatColor(tempCat);
               onClose();
             }}
